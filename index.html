@@ -140,6 +140,9 @@ section{padding:44px 0}
 .bdg{font-family:var(--disp);font-weight:800;font-style:italic;text-transform:uppercase;font-size:15px;padding:2px 9px;transform:skew(-7deg);background:var(--lime);color:#0a0d0a}
 .bdg.dark{background:#0a0d0a;color:var(--lime);box-shadow:inset 0 0 0 1.5px var(--lime)}
 .bdg.ex{background:var(--warn);color:#241a00}
+.bdg.ok{background:var(--lime);color:#0a0d0a}
+.bdg.furn{background:var(--warn);color:#241a00}
+.bdg.lipsa{background:var(--red);color:#fff}
 .cb{padding:14px 16px 16px;display:flex;flex-direction:column;gap:9px;flex:1}
 .cb .cat{font-size:12.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--g);font-weight:700}
 .cb h3{font-size:25px;font-weight:800}
@@ -242,6 +245,23 @@ footer a:hover{color:var(--accent)}
 .pd .pimg{border-radius:12px;overflow:hidden;background:#f3f6f1;position:relative;aspect-ratio:4/3}
 .pd .pimg img{width:100%;height:100%;object-fit:cover}
 .pd .pimg.white{background:#fff}.pd .pimg.white img{object-fit:contain}
+.pgal{display:grid;gap:8px}
+.pgal .main{position:relative;aspect-ratio:4/3;background:#f3f6f1;border-radius:12px;overflow:hidden}
+.pgal .main.white{background:#fff}
+.pgal .main img{width:100%;height:100%;object-fit:cover}
+.pgal .main.white img{object-fit:contain}
+.pgal .nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:rgba(255,255,255,.92);font-size:22px;cursor:pointer;display:grid;place-items:center;line-height:1}
+.pgal .nav.prev{left:8px}.pgal .nav.next{right:8px}
+.pgal .thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.pgal .thumbs button{width:68px;height:52px;padding:0;border:2px solid var(--line);border-radius:8px;overflow:hidden;background:#fff;cursor:pointer}
+.pgal .thumbs button.on{border-color:var(--g)}
+.pgal .thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.imgpick.multi{align-items:flex-start}
+.imgpick .slot{display:grid;gap:6px;justify-items:center}
+.imgpick .slot .pv{width:110px;height:82px}
+.imgpick .slot .sacts{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.draftban{background:#fff7e0;border:1px solid #e0a514;color:#5a3d00;padding:10px 12px;border-radius:10px;margin:0 0 14px;font-size:14px}
+.heroPick .pv{width:min(100%,280px);height:120px}
 .pd ul.dot{margin:10px 0;padding:0;list-style:none;display:grid;gap:6px}
 .pd ul.dot li{padding-left:26px;position:relative}
 .pd ul.dot li:before{content:"";position:absolute;left:2px;top:7px;width:12px;height:7px;border-left:3px solid var(--accent);border-bottom:3px solid var(--accent);transform:rotate(-45deg)}
@@ -597,7 +617,12 @@ const DEFAULTS={
     tiktok:"",
     youtube:"",
     mapsUrl:"https://www.google.com/maps/search/?api=1&query=Str.+F%C4%83getului+14%2C+Lipova%2C+Arad",
-    rateIntro:"Alege produsul, avansul și finanțarea și vezi imediat rata lunară orientativă."
+    rateIntro:"Alege produsul, avansul și finanțarea și vezi imediat rata lunară orientativă.",
+    heroImg:"",
+    quick1:"Modele care se conduc fără permis",
+    quick2:"Plata în rate, inclusiv fără avans",
+    quick3:"Livrare în județul Arad și împrejurimi",
+    quick4:"Service, piese și garanție extinsă"
   },
   cats:[
     {id:"scutere",nume:"Scutere electrice",ico:"scuter"},
@@ -669,23 +694,149 @@ const imgSrc=v=>!v?"":(v.startsWith("asset:")?(IMGS[v.slice(6)]||EIMG[v.slice(6)
 const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:"#";
 const numOrNull=v=>{v=String(v??"").trim().replace(",",".");if(v==="")return null;const n=Number(v);return isFinite(n)?n:null};
 
-function load(){
+const GH_TOKEN_KEY="urda_gh_token";
+const STOC_MAP={in_stoc:["IN STOC","ok"],la_furnizor:["IN STOC LA FURNIZOR","furn"],lipsa:["LIPSA STOC","lipsa"]};
+const QUICK_ICONS=[
+  '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',
+  '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',
+  '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  '<path d="M14.700 6.300a4 4 0 0 0-5.400 5.400L3 18l3 3 6.300-6.300a4 4 0 0 0 5.400-5.400l-2.700 2.700-2.300-2.300z"/>'
+];
+let HAS_UNPUBLISHED=false;
+let pendingImgs;
+let GALLERY={id:"",i:0};
+
+function normalizeSite(d){
+  d.texts=Object.assign(clone(DEFAULTS.texts),d.texts||{});
+  d.cats=d.cats&&d.cats.length?d.cats:clone(DEFAULTS.cats);
+  d.posts=Array.isArray(d.posts)?d.posts:[];
+  d.blog=Array.isArray(d.blog)?d.blog:clone(DEFAULTS.blog||[]);
+  d.rate=d.rate&&d.rate.length?d.rate:clone(DEFAULTS.rate);
+  if(d.texts){delete d.texts.githubToken;delete d.texts.ghToken}
+  migrate(d);
+  return d;
+}
+function loadDraft(){
   try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);
-    if(d&&d.products&&d.texts){d.texts=Object.assign(clone(DEFAULTS.texts),d.texts);d.cats=d.cats||clone(DEFAULTS.cats);d.posts=d.posts||[];d.blog=Array.isArray(d.blog)?d.blog:clone(DEFAULTS.blog||[]);d.rate=d.rate||clone(DEFAULTS.rate);migrate(d);return d}}}catch(e){}
-  return clone(DEFAULTS);
+    if(d&&d.products&&d.texts)return normalizeSite(d)}}catch(e){}
+  return null;
+}
+function load(){
+  const d=loadDraft();
+  return d||normalizeSite(clone(DEFAULTS));
 }
 function migrate(d){
+  if(!d.cats)d.cats=clone(DEFAULTS.cats);
+  if(!Array.isArray(d.products))d.products=[];
   const cargo=d.cats.find(c=>c.id==="cargo"),cab=d.cats.find(c=>c.id==="cabina");
   if(cargo&&cab){cargo.id="utilitare";cargo.nume="Utilitare";cargo.ico="util";d.cats=d.cats.filter(c=>c.id!=="cabina");d.products.forEach(p=>{if(p.cat==="cargo"||p.cat==="cabina")p.cat="utilitare"})}
   if(!d.cats.some(c=>c.id==="electro"))d.cats.push({id:"electro",nume:"Electrocasnice",ico:"electro"});
   const ids=new Set(d.products.map(p=>p.id));
   DEFAULTS.products.filter(p=>String(p.id).startsWith("e")&&!ids.has(p.id)).forEach(p=>d.products.push(clone(p)));
+  (d.products||[]).forEach(p=>{
+    if(!Array.isArray(p.imgs)||!p.imgs.length)p.imgs=p.img?[p.img]:[];
+    p.imgs=p.imgs.filter(Boolean).slice(0,3);
+    p.img=p.imgs[0]||"";
+    if(!p.stoc||!(p.stoc in STOC_MAP))p.stoc="in_stoc";
+  });
+  const T=d.texts||(d.texts={});
+  if(!T.quick1)T.quick1="Modele care se conduc fără permis";
+  if(!T.quick2)T.quick2="Plata în rate, inclusiv fără avans";
+  if(!T.quick3)T.quick3="Livrare în județul Arad și împrejurimi";
+  if(!T.quick4)T.quick4="Service, piese și garanție extinsă";
+  if(T.heroImg==null)T.heroImg="";
 }
+function pubSnapshot(d){
+  const x=clone(d);
+  if(x.texts){delete x.texts.githubToken;delete x.texts.ghToken}
+  return x;
+}
+function markUnpublished(){HAS_UNPUBLISHED=true}
 function save(msg){
-  try{localStorage.setItem(KEY,JSON.stringify(S));if(msg!==false)toast(msg||"Salvat");return true}
+  try{localStorage.setItem(KEY,JSON.stringify(S));HAS_UNPUBLISHED=true;if(msg!==false)toast(msg||"Salvat (draft local)");return true}
   catch(e){toast("Nu s-a putut salva în browser. Încearcă poze mai mici sau exportă o copie de siguranță.");return false}
 }
-let S=load();
+function getGhToken(){try{return localStorage.getItem(GH_TOKEN_KEY)||""}catch(e){return ""}}
+function setGhToken(v){try{v?localStorage.setItem(GH_TOKEN_KEY,v):localStorage.removeItem(GH_TOKEN_KEY)}catch(e){}}
+function downloadContentJson(obj){
+  const b=new Blob([JSON.stringify(obj,null,1)],{type:"application/json"});
+  const u=URL.createObjectURL(b);const l=document.createElement("a");l.href=u;l.download="content.json";l.click();setTimeout(()=>URL.revokeObjectURL(u),2000);
+}
+async function publishToGitHub(contentStr){
+  const token=getGhToken().trim();
+  if(!token)return {ok:false,needToken:true};
+  const api="https://api.github.com/repos/horeattt/urdapower/contents/content.json";
+  const headers={Accept:"application/vnd.github+json","Content-Type":"application/json",Authorization:"Bearer "+token,"X-GitHub-Api-Version":"2022-11-28"};
+  let sha;
+  try{
+    const gr=await fetch(api+"?ref=main",{headers});
+    if(gr.ok){const j=await gr.json();sha=j.sha}
+    else if(gr.status!==404){const t=await gr.text();return {ok:false,err:"Nu am putut citi content.json de pe GitHub ("+gr.status+")."}}
+  }catch(e){return {ok:false,err:"Eroare de rețea la citirea de pe GitHub."}}
+  const body={message:"Publicare conținut site URDA Power Center",content:btoa(unescape(encodeURIComponent(contentStr))),branch:"main"};
+  if(sha)body.sha=sha;
+  try{
+    const pr=await fetch(api,{method:"PUT",headers,body:JSON.stringify(body)});
+    if(!pr.ok){const t=await pr.text();return {ok:false,err:"Publicarea a eșuat ("+pr.status+"). Verifică tokenul (Contents: write) pe horeattt/urdapower."}}
+    return {ok:true};
+  }catch(e){return {ok:false,err:"Eroare de rețea la publicare."}}
+}
+async function publishSite(){
+  const payload=pubSnapshot(S);
+  const str=JSON.stringify(payload,null,1);
+  downloadContentJson(payload);
+  toast("Se publică…");
+  const res=await publishToGitHub(str);
+  if(res.needToken){
+    toast("Am descărcat content.json. Fără token GitHub, înlocuiește manual fișierul în repo.");
+    return;
+  }
+  if(!res.ok){toast(res.err||"Publicarea a eșuat");return}
+  HAS_UNPUBLISHED=false;
+  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+  toast("Publicat pe site pentru toți. Pagina se actualizează în 1–2 minute.");
+  if(ADMIN)renderAdmin();
+}
+function prodImgs(p){
+  if(!p)return [];
+  if(Array.isArray(p.imgs)&&p.imgs.length)return p.imgs.filter(Boolean).slice(0,3);
+  return p.img?[p.img]:[];
+}
+function coverOf(p){return prodImgs(p)[0]||""}
+function stocBdg(p){const s=STOC_MAP[p&&p.stoc]||STOC_MAP.in_stoc;return `<span class="bdg ${s[1]}">${s[0]}</span>`}
+function currentImgs(){
+  if(pendingImgs!==undefined)return pendingImgs.filter(Boolean).slice(0,3);
+  try{return JSON.parse(($("#prodF")||{}).dataset.imgs||"[]")}catch(e){return []}
+}
+function renderImgsPick(){
+  const box=$("#imgsPick");if(!box)return;
+  const list=currentImgs();
+  box.innerHTML=list.map((im,i)=>`<div class="slot"><div class="pv">${imgSrc(im)?`<img src="${esc(imgSrc(im))}" alt="">`:"fără poză"}</div>
+    <div class="sacts"><button type="button" class="btn sm ghost" data-act="imgleft" data-i="${i}" ${i?"":"disabled"}>←</button>
+    <button type="button" class="btn sm ghost" data-act="imgright" data-i="${i}" ${i<list.length-1?"":"disabled"}>→</button>
+    <button type="button" class="btn sm danger" data-act="imgdel" data-i="${i}">Șterge</button></div></div>`).join("")+
+    (list.length<3?`<label class="btn sm ghost" style="cursor:pointer">+ Adaugă poză<input type="file" id="imgF" accept="image/*" hidden></label>`:"");
+  if($("#prodF"))$("#prodF").dataset.imgs=JSON.stringify(list);
+}
+function compressImageFile(file){
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.74))};im.onerror=()=>reject(new Error("img"));im.src=fr.result};
+    fr.onerror=()=>reject(new Error("file"));
+    fr.readAsDataURL(file);
+  });
+}
+async function fetchRemoteContent(){
+  try{
+    const r=await fetch("./content.json?v="+Date.now(),{cache:"no-store"});
+    if(!r.ok)return null;
+    const d=await r.json();
+    if(d&&Array.isArray(d.products)&&d.texts)return normalizeSite(d);
+  }catch(e){}
+  return null;
+}
+let S=clone(DEFAULTS);
+migrate(S);
 let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),2600)}
 
 const ICO={
@@ -713,19 +864,15 @@ let CMP=[];
 function renderSite(){
   const T=S.texts;
   $("#anunt").textContent=T.anunt||"";
-  $("#heroImg").src=IMGS.hero;
+  $("#heroImg").src=(T.heroImg&&String(T.heroImg).trim())?T.heroImg:IMGS.hero;
   $("#heroTitlu").innerHTML=esc(T.heroTitlu).replace(/\*(.+?)\*/g,"<mark>$1</mark>");
   $("#heroSub").textContent=T.heroSub;
   $("#telTop").href=$("#dockTel").href=telLink();$("#telTopTxt").textContent=T.telefon;
   $("#telTop").setAttribute("aria-label","Sună "+T.telefon);
   $("#dockTel").setAttribute("aria-label","Sună "+T.telefon);
   $("#heroWa").href=$("#waFab").href=$("#dockWa").href=waLink("Bună ziua! Aș dori mai multe informații despre produsele URDA Power Center.");
-  $("#quick").innerHTML=[
-    ['<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',"Modele care se conduc fără permis"],
-    ['<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/>',"Plata în rate, inclusiv fără avans"],
-    ['<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',"Livrare în județul Arad și împrejurimi"],
-    ['<path d="M14.700 6.300a4 4 0 0 0-5.400 5.400L3 18l3 3 6.300-6.300a4 4 0 0 0 5.400-5.400l-2.700 2.700-2.300-2.300z"/>',"Service, piese și garanție extinsă"]
-  ].map(q=>`<div><svg viewBox="0 0 24 24">${q[0]}</svg>${q[1]}</div>`).join("");
+  const qtxt=[T.quick1,T.quick2,T.quick3,T.quick4];
+  $("#quick").innerHTML=QUICK_ICONS.map((ic,i)=>`<div><svg viewBox="0 0 24 24">${ic}</svg>${esc(qtxt[i]||"")}</div>`).join("");
   $("#rateIntro").textContent=T.rateIntro;
   $("#despreTitlu").textContent=T.despreTitlu;$("#despreTxt").textContent=T.despre;$("#partenerTxt").textContent=T.partener;
   $("#feat").innerHTML=[["Showroom","Vezi și probezi vehiculele în Lipova"],["Fără permis","Modele limitate la 25 km/h"],["Rate","BT Direct, BT STAR, Raiffeisen, TBI Bank"],["Service & piese","Suntem aici și după cumpărare"]].map(f=>`<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join("");
@@ -760,9 +907,27 @@ function filtered(){
   return l;
 }
 function phHtml(p,cls){
-  const s=imgSrc(p.img);const white=p.img==="asset:triciclu";
+  const cover=coverOf(p);const s=imgSrc(cover);const white=cover==="asset:triciclu";
   return `<div class="${cls}${white?" white":""}" data-act="prod" data-id="${esc(p.id)}">${s?`<img src="${esc(s)}" alt="${esc(p.nume)}">`:`<div class="noimg">${catIco(p.cat)}<span>Fotografie în curând</span></div>`}
-    <div class="badges">${disc(p)?`<span class="bdg">-${disc(p)}%</span>`:""}${p.faraPermis?`<span class="bdg dark">Fără permis</span>`:""}${p.exemplu?`<span class="bdg ex">Exemplu</span>`:""}</div></div>`;
+    <div class="badges">${stocBdg(p)}${disc(p)?`<span class="bdg">-${disc(p)}%</span>`:""}${p.faraPermis?`<span class="bdg dark">Fără permis</span>`:""}${p.exemplu?`<span class="bdg ex">Exemplu</span>`:""}</div></div>`;
+}
+function galleryHtml(p){
+  const imgs=prodImgs(p);GALLERY={id:p.id,i:0};
+  if(!imgs.length)return `<div class="pimg"><div class="noimg">${catIco(p.cat)}<span>Fotografie în curând</span></div><div class="badges">${stocBdg(p)}</div></div>`;
+  const white=imgs[0]==="asset:triciclu";
+  const main=imgSrc(imgs[0]);
+  const nav=imgs.length>1?`<button type="button" class="nav prev" data-act="pgalprev" aria-label="Poza anterioară">‹</button><button type="button" class="nav next" data-act="pgalnext" aria-label="Poza următoare">›</button>`:"";
+  const thumbs=imgs.length>1?`<div class="thumbs">${imgs.map((im,i)=>`<button type="button" class="${i?"":"on"}" data-act="pgal" data-i="${i}" aria-label="Poza ${i+1}"><img src="${esc(imgSrc(im))}" alt=""></button>`).join("")}</div>`:"";
+  return `<div class="pgal" id="pgal"><div class="main${white?" white":""}" id="pgalMainWrap"><img id="pgalMain" src="${esc(main)}" alt="${esc(p.nume)}">${nav}<div class="badges">${stocBdg(p)}</div></div>${thumbs}</div>`;
+}
+function setGallery(i){
+  const p=S.products.find(x=>x.id===GALLERY.id);if(!p)return;
+  const imgs=prodImgs(p);if(!imgs.length)return;
+  GALLERY.i=(i+imgs.length)%imgs.length;
+  const im=imgs[GALLERY.i];const wrap=$("#pgalMainWrap");const main=$("#pgalMain");
+  if(main){main.src=imgSrc(im);main.alt=p.nume}
+  if(wrap)wrap.classList.toggle("white",im==="asset:triciclu");
+  $$("#pgal .thumbs button").forEach((b,idx)=>b.classList.toggle("on",idx===GALLERY.i));
 }
 function specList(p){return [p.spec||"",p.putere?num(p.putere)+" W":"",p.autonomie?"până la "+p.autonomie+" km":"",p.viteza?p.viteza+" km/h":""].filter(Boolean)}
 function priceHtml(p){
@@ -793,12 +958,14 @@ function openProd(id){
   track("view",{id:p.id,name:p.nume});
   const dot=(p.dotari||"").split("\n").map(s=>s.trim()).filter(Boolean);
   const rows=[["Categorie",catName(p.cat)],["Putere motor",p.putere?num(p.putere)+" W":""],["Autonomie",p.autonomie?"până la "+p.autonomie+" km":""],["Viteză maximă",p.viteza?p.viteza+" km/h":""],["Permis de conducere",p.faraPermis?"Nu este necesar":""]].filter(r=>r[1]);
+  const st=(STOC_MAP[p.stoc]||STOC_MAP.in_stoc)[0];
   openModal(`<button class="x" data-act="close" aria-label="Închide">×</button>
-  <div class="pd">${phHtml(p,"pimg")}
+  <div class="pd">${galleryHtml(p)}
    <div><span class="cb"><span class="cat">${esc(catName(p.cat))}</span></span><h2>${esc(p.nume)}</h2>
+   <p style="margin:0 0 8px">${stocBdg(p)}</p>
    ${priceHtml(p)}
    <p style="color:#3d4a42">${esc(p.desc)}</p>
-   <table class="spt">${rows.map(r=>`<tr><td>${r[0]}</td><td>${esc(r[1])}</td></tr>`).join("")}</table>
+   <table class="spt">${rows.map(r=>`<tr><td>${r[0]}</td><td>${esc(r[1])}</td></tr>`).join("")}<tr><td>Stoc</td><td>${esc(st)}</td></tr></table>
    ${dot.length?`<ul class="dot">${dot.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:""}
    <div class="cta" style="margin-top:16px"><a class="btn wa" target="_blank" rel="noopener" href="${esc(waLink(orderTxt(p)))}">Comandă pe WhatsApp</a><a class="btn ghost" href="${telLink()}">Sună: ${esc(S.texts.telefon)}</a>${p.pret?`<button class="btn ghost" data-act="calcprod" data-id="${esc(p.id)}">Calculează rata</button>`:""}</div>
    </div></div>`);
@@ -813,7 +980,7 @@ function showCmp(){
   if(ps.length<2){toast("Alege cel puțin 2 produse pentru comparație");return}
   const row=(lb,f)=>`<tr><td>${lb}</td>${ps.map(p=>`<td>${f(p)||"—"}</td>`).join("")}</tr>`;
   openModal(`<button class="x" data-act="close" aria-label="Închide">×</button><h2>Compară modelele</h2><div class="scrollx"><table class="ctable">
-   <tr><th></th>${ps.map(p=>`<th>${imgSrc(p.img)?`<img src="${esc(imgSrc(p.img))}" alt="">`:""}${esc(p.nume)}</th>`).join("")}</tr>
+   <tr><th></th>${ps.map(p=>`<th>${imgSrc(coverOf(p))?`<img src="${esc(imgSrc(coverOf(p)))}" alt="">`:""}${esc(p.nume)}</th>`).join("")}</tr>
    ${row("Preț",p=>p.pret?`<b class="g">${lei(p.pret)}</b>`:"la cerere")}${row("Categorie",p=>esc(catName(p.cat)))}${row("Putere motor",p=>p.putere?num(p.putere)+" W":"")}${row("Autonomie",p=>p.autonomie?p.autonomie+" km":"")}${row("Viteză maximă",p=>p.viteza?p.viteza+" km/h":"")}${row("Fără permis",p=>p.faraPermis?"Da":"")}
    ${row("",p=>`<a class="btn sm wa" target="_blank" rel="noopener" href="${esc(waLink(orderTxt(p)))}">Comandă</a>`)}</table></div>`);
 }
@@ -963,12 +1130,18 @@ function renderStatsPanel(){
   <h3>Clickuri pe rețelele sociale</h3>${barsHtml(tally(ev.filter(e=>e.type==="social"),e=>e.name))}`;
 }
 function sendMail(payload){
-  const to=String((S.texts&&S.texts.email)||"").trim();
+  const to=String((S.texts&&S.texts.email)||"urdapowercenter@yahoo.com").trim()||"urdapowercenter@yahoo.com";
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to))return Promise.resolve(false);
+  const body=Object.assign({
+    _subject:"Mesaj nou de pe www.urdapower.ro",
+    _template:"table",
+    _captcha:"false",
+    _replyto:payload.Telefon||payload.telefon||""
+  },payload);
   return fetch("https://formsubmit.co/ajax/"+encodeURIComponent(to),{
     method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
-    body:JSON.stringify(Object.assign({_subject:"Mesaj nou de pe urdapower.ro",_template:"table",_captcha:"false"},payload))
-  }).then(r=>r.json().then(j=>!!(r.ok&&String(j.success)==="true")).catch(()=>false)).catch(()=>false);
+    body:JSON.stringify(body)
+  }).then(r=>r.json().then(j=>!!(r.ok&&(j.success===true||String(j.success)==="true"))).catch(()=>r.ok)).catch(()=>false);
 }
 
 /* ---- modal ---- */
@@ -998,8 +1171,8 @@ function renderAdmin(){
   const stats=`<div class="stats"><div class="stat"><b>${S.products.length}</b><span>produse în catalog</span></div><div class="stat"><b>${S.products.filter(p=>p.exemplu).length}</b><span>exemple de completat</span></div><div class="stat"><b>${S.products.filter(p=>disc(p)>0).length}</b><span>produse la reducere</span></div><div class="stat"><b>${S.posts.filter(p=>p.activ!==false).length}</b><span>postări publicate</span></div></div>`;
   if(TAB==="produse"){
     B.innerHTML=stats+`<div class="ahead"><h3>Produse</h3><button class="btn sm" data-act="pnew">+ Adaugă produs</button></div>`+
-     (S.products.map((p,i)=>`<div class="row${p.activ===false?" off":""}"><div class="th">${imgSrc(p.img)?`<img src="${esc(imgSrc(p.img))}" alt="">`:"fără poză"}</div>
-      <div><b>${esc(p.nume)}</b>${p.exemplu?`<span class="tag">exemplu</span>`:""}${disc(p)?`<span class="tag gr">-${disc(p)}%</span>`:""}${p.activ===false?`<span class="tag gy">ascuns</span>`:""}<small>${esc(catName(p.cat))} · ${p.pret?lei(p.pret):"preț la cerere"}</small></div>
+     (S.products.map((p,i)=>`<div class="row${p.activ===false?" off":""}"><div class="th">${imgSrc(coverOf(p))?`<img src="${esc(imgSrc(coverOf(p)))}" alt="">`:"fără poză"}</div>
+      <div><b>${esc(p.nume)}</b>${p.exemplu?`<span class="tag">exemplu</span>`:""}${disc(p)?`<span class="tag gr">-${disc(p)}%</span>`:""}${p.activ===false?`<span class="tag gy">ascuns</span>`:""}<small>${esc(catName(p.cat))} · ${(STOC_MAP[p.stoc]||STOC_MAP.in_stoc)[0]} · ${p.pret?lei(p.pret):"preț la cerere"}</small></div>
       <div class="ra"><button class="btn sm ghost" data-act="pup" data-i="${i}" aria-label="Mută mai sus" ${i?"":"disabled"}>↑</button><button class="btn sm ghost" data-act="pedit" data-id="${esc(p.id)}">Editează</button><button class="btn sm ghost" data-act="ptoggle" data-id="${esc(p.id)}">${p.activ===false?"Afișează":"Ascunde"}</button><button class="btn sm danger" data-act="del" data-k="products" data-id="${esc(p.id)}">Șterge</button></div></div>`).join("")||`<div class="empty">Nu ai niciun produs. Adaugă primul produs.</div>`);
   }
   else if(TAB==="postari"){
@@ -1010,15 +1183,24 @@ function renderAdmin(){
   }
   else if(TAB==="texte"){
     const T=S.texts;const f=(k,lb,ta,hint)=>`<div class="fld"><label for="t_${k}">${lb}</label>${ta?`<textarea class="inp" id="t_${k}" name="${k}" rows="${ta}">${esc(T[k])}</textarea>`:`<input class="inp" id="t_${k}" name="${k}" value="${esc(T[k])}">`}</div>${hint?`<p class="hint">${hint}</p>`:""}`;
+    const heroSrc=(T.heroImg&&String(T.heroImg).trim())?T.heroImg:IMGS.hero;
     B.innerHTML=`<div class="ahead"><h3>Texte și date de contact</h3></div><form id="textF" class="panel">
       ${f("anunt","Bara de anunț (sus)",0,"Lasă gol dacă nu vrei bara verde de sus.")}
       ${f("heroTitlu","Titlu principal",0,"Pune între steluțe cuvintele evidențiate pe verde, ex: Mobilitate electrică *pentru toți*")}
       ${f("heroSub","Text sub titlu",3)}
+      <div class="fld heroPick"><span class="lb">Imagine de fundal (banner)</span>
+        <div class="imgpick"><div class="pv" id="heroPv"><img src="${esc(heroSrc)}" alt=""></div>
+        <label class="btn sm ghost" style="cursor:pointer">Schimbă imaginea<input type="file" id="heroF" accept="image/*" hidden></label>
+        <button type="button" class="btn sm ghost" data-act="heroreset">Revino la bannerul implicit</button></div>
+        <p class="hint">Poza se comprimă automat. Apasă Salvează textele, apoi Publică pe site ca să o vadă toți.</p></div>
+      ${f("quick1","Beneficiu rapid 1")}${f("quick2","Beneficiu rapid 2")}${f("quick3","Beneficiu rapid 3")}${f("quick4","Beneficiu rapid 4")}
+      <p class="hint">Aceste 4 texte apar lângă butoanele din banner (cercurile cu pictograme).</p>
       ${f("rateIntro","Text secțiune rate",2)}
       ${f("despreTitlu","Titlu „Despre noi”")}${f("despre","Text „Despre noi”",7)}
       <div class="f2">${f("partener","Partener")}${f("slogan","Slogan (subsol)")}</div>
       <div class="f2">${f("telefon","Telefon")}${f("whatsapp","Număr WhatsApp (cu prefix 40, fără +)")}</div>
       ${f("email","E-mail")}
+      <p class="hint">La primul mesaj din formular, FormSubmit poate cere confirmarea adresei ${esc(T.email||"urdapowercenter@yahoo.com")}.</p>
       ${f("adresa","Adresă")}${f("program","Program showroom",4)}
       ${f("mapsUrl","Link Google Maps")}
       <button class="btn">Salvează textele</button></form>`;
@@ -1044,7 +1226,7 @@ function renderAdmin(){
   }
   else if(TAB==="mesaje"){
     const box=inbox();
-    B.innerHTML=`<div class="ahead"><h3>Mesaje</h3></div><p class="note">Aici apar mesajele trimise din formular în acest browser. O copie pleacă și pe e-mailul din contact; la prima trimitere, FormSubmit cere o confirmare pe acel e-mail.</p>`+
+    B.innerHTML=`<div class="ahead"><h3>Mesaje</h3></div><p class="note">Mesajele din formular se salvează aici (în acest browser) și se trimit prin e-mail la <b>${esc(S.texts.email||"urdapowercenter@yahoo.com")}</b> via FormSubmit. La primul mesaj, FormSubmit poate cere confirmarea adresei urdapowercenter@yahoo.com — verifică inbox/spam Yahoo.</p>`+
      (box.length?box.map(m=>`<div class="row"><div><b>${esc(m.nume)} ${esc(m.prenume)}</b>${m.read?"":`<span class="tag gr">nou</span>`}<small>${esc(m.telefon)} · ${esc(new Date(m.t).toLocaleString("ro-RO"))}</small><p style="margin:8px 0 0;white-space:pre-wrap">${esc(m.mesaj)}</p></div><div class="ra">${m.read?"":`<button class="btn sm ghost" data-act="mread" data-id="${esc(m.id)}">Citit</button>`}<button class="btn sm ghost" data-act="mdel" data-id="${esc(m.id)}">Șterge</button></div></div>`).join(""):`<div class="empty">Niciun mesaj încă.</div>`);
   }
   else if(TAB==="statistici"){
@@ -1063,19 +1245,47 @@ function renderAdmin(){
       <button class="btn">Salvează conturile</button></form>`;
   }
   else if(TAB==="backup"){
-    B.innerHTML=`<div class="ahead"><h3>Copie de siguranță</h3></div><div class="panel">
-      <p style="margin-top:0">Modificările făcute aici se păstrează în acest browser, pe acest dispozitiv. Exportă periodic o copie, ca să o poți restaura sau muta pe alt calculator.</p>
-      <div class="cta"><button class="btn" data-act="export">Exportă datele (fișier .json)</button><label class="btn ghost" style="cursor:pointer">Importă un fișier<input type="file" id="impF" accept="application/json,.json" hidden></label><button class="btn danger" data-act="reset">Revino la conținutul inițial</button></div></div>`;
+    const tok=getGhToken();
+    B.innerHTML=`${HAS_UNPUBLISHED?`<div class="draftban">Ai modificări locale nepublicate. Apasă <b>Publică pe site (pentru toți)</b> ca vizitatorii să le vadă pe www.urdapower.ro.</div>`:""}
+      <div class="ahead"><h3>Publicare pe site</h3></div><div class="panel">
+      <p style="margin-top:0"><b>Publică pe site (pentru toți)</b> scrie fișierul <code>content.json</code> pe GitHub (branch main), ca toată lumea să vadă aceleași produse și texte. Tokenul se păstrează doar în acest browser, nu în content.json.</p>
+      <div class="fld"><label for="ghTok">Token GitHub (fine-grained, Contents: Write pe horeattt/urdapower)</label>
+        <input class="inp" id="ghTok" type="password" autocomplete="off" value="${esc(tok)}" placeholder="github_pat_… sau ghp_…"></div>
+      <div class="cta"><button type="button" class="btn" data-act="savetoken">Salvează tokenul</button><button type="button" class="btn" data-act="publish">Publică pe site (pentru toți)</button><button type="button" class="btn ghost" data-act="dlcontent">Descarcă content.json</button></div>
+      <p class="note">Fără token: descarcă <code>content.json</code> și înlocuiește fișierul în repo (sau cere agentului). Cu token: un singur click publică pe site. După publicare, GitHub Pages poate dura 1–2 minute.</p></div>
+      <div class="ahead"><h3>Copie de siguranță</h3></div><div class="panel">
+      <p style="margin-top:0">Modificările din admin se salvează local ca draft. Exportă periodic o copie, ca să o poți restaura sau muta pe alt calculator.</p>
+      <div class="cta"><button class="btn" data-act="export">Exportă datele (fișier .json)</button><label class="btn ghost" style="cursor:pointer">Importă un fișier<input type="file" id="impF" accept="application/json,.json" hidden></label><button class="btn ghost" data-act="loaddraft">Încarcă draft local</button><button class="btn danger" data-act="reset">Revino la conținutul inițial</button></div></div>`;
+  }
+  if(TAB!=="backup"&&HAS_UNPUBLISHED){
+    B.insertAdjacentHTML("afterbegin",`<div class="draftban">Ai modificări locale nepublicate. Du-te la „Copie de siguranță” → <b>Publică pe site (pentru toți)</b>.</div>`);
   }
 }
 
 function imgField(cur){pendingImg=undefined;return `<div class="fld"><span class="lb">Fotografie</span><div class="imgpick"><div class="pv" id="pv">${imgSrc(cur)?`<img src="${esc(imgSrc(cur))}" alt="">`:"fără poză"}</div><label class="btn sm ghost" style="cursor:pointer">Alege o poză<input type="file" id="imgF" accept="image/*" hidden></label><button type="button" class="btn sm ghost" data-act="imgclear">Elimină poza</button></div></div>`}
+function imgsField(imgs){
+  pendingImgs=undefined;
+  const list=(imgs||[]).filter(Boolean).slice(0,3);
+  return `<div class="fld"><span class="lb">Fotografii (maximum 3)</span><div class="imgpick multi" id="imgsPick"></div>
+    <p class="hint">Prima poză este pe card. Comprimăm automat imaginile; păstrează pozele rezonabil de mici.</p></div>`;
+}
 function readImg(file){
-  const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);pendingImg=c.toDataURL("image/jpeg",.74);$("#pv").innerHTML=`<img src="${pendingImg}" alt="">`};im.onerror=()=>toast("Fișierul ales nu este o imagine validă");im.src=fr.result};fr.readAsDataURL(file);
+  compressImageFile(file).then(data=>{
+    if($("#imgsPick")){
+      const list=currentImgs();
+      if(list.length>=3){toast("Poți adăuga cel mult 3 poze");return}
+      pendingImgs=list.concat([data]).slice(0,3);
+      renderImgsPick();
+    }else{
+      pendingImg=data;const pv=$("#pv");if(pv)pv.innerHTML=`<img src="${pendingImg}" alt="">`;
+    }
+  }).catch(()=>toast("Fișierul ales nu este o imagine validă"));
 }
 function prodForm(id){
-  const p=id?S.products.find(x=>x.id===id):{nume:"",cat:(S.cats[0]||{}).id,pret:"",pretVechi:"",putere:"",autonomie:"",viteza:25,faraPermis:true,activ:true,exemplu:false,img:"",desc:"",dotari:""};
+  const p=id?S.products.find(x=>x.id===id):{nume:"",cat:(S.cats[0]||{}).id,pret:"",pretVechi:"",putere:"",autonomie:"",viteza:25,faraPermis:true,activ:true,exemplu:false,img:"",imgs:[],stoc:"in_stoc",desc:"",dotari:""};
+  const imgs=prodImgs(p);
   const v=x=>x===null||x===undefined?"":esc(x);
+  const st=p.stoc||"in_stoc";
   openModal(`<button class="x" data-act="close" aria-label="Închide">×</button><h2>${id?"Editează produsul":"Produs nou"}</h2>
   <form id="prodF" data-id="${esc(id||"")}">
    <div class="f2"><div class="fld"><label for="pn">Denumire</label><input class="inp" id="pn" name="nume" value="${v(p.nume)}" required></div>
@@ -1085,13 +1295,20 @@ function prodForm(id){
    <div class="f3"><div class="fld"><label for="pw">Putere motor (W)</label><input class="inp" id="pw" name="putere" inputmode="numeric" value="${v(p.putere)}"></div>
    <div class="fld"><label for="pa">Autonomie (km)</label><input class="inp" id="pa" name="autonomie" inputmode="numeric" value="${v(p.autonomie)}"></div>
    <div class="fld"><label for="ps">Viteză maximă (km/h)</label><input class="inp" id="ps" name="viteza" inputmode="numeric" value="${v(p.viteza)}"></div></div>
+   <div class="fld"><label for="pst">Stoc</label><select class="inp" id="pst" name="stoc">
+     <option value="in_stoc" ${st==="in_stoc"?"selected":""}>IN STOC</option>
+     <option value="la_furnizor" ${st==="la_furnizor"?"selected":""}>IN STOC LA FURNIZOR</option>
+     <option value="lipsa" ${st==="lipsa"?"selected":""}>LIPSA STOC</option>
+   </select></div>
    <div class="fld"><label for="pd">Descriere</label><textarea class="inp" id="pd" name="desc" rows="3">${v(p.desc)}</textarea></div>
    <div class="fld"><label for="pt">Dotări (câte una pe rând)</label><textarea class="inp" id="pt" name="dotari" rows="5">${v(p.dotari)}</textarea></div>
-   ${imgField(p.img)}
+   ${imgsField(imgs)}
    <div class="frow" style="margin:6px 0 18px"><label class="tog"><input type="checkbox" name="faraPermis" ${p.faraPermis?"checked":""}> Fără permis</label><label class="tog"><input type="checkbox" name="activ" ${p.activ!==false?"checked":""}> Vizibil pe site</label><label class="tog"><input type="checkbox" name="exemplu" ${p.exemplu?"checked":""}> Marcat ca exemplu</label></div>
    <div class="err" id="perr"></div>
    <div class="cta"><button class="btn">Salvează produsul</button><button type="button" class="btn ghost" data-act="close">Renunță</button></div></form>`);
-  $("#prodF").dataset.img=p.img||"";
+  $("#prodF").dataset.imgs=JSON.stringify(imgs);
+  pendingImgs=imgs.slice();
+  renderImgsPick();
 }
 function postForm(id, kind){
   const key=kind==="blog"?"blog":"posts";
@@ -1157,12 +1374,23 @@ document.addEventListener("click",e=>{
   else if(a==="mdel"){saveInbox(inbox().filter(m=>m.id!==id));toast("Mesaj șters");renderAdmin()}
   else if(a==="del"){if(el.dataset.sure){S[el.dataset.k]=S[el.dataset.k].filter(x=>x.id!==id);save("Șters");renderAdmin()}else{el.dataset.sure=1;el.textContent="Sigur ștergi?";setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent="Șterge"}},3000)}}
   else if(a==="imgclear"){pendingImg="";$("#pv").textContent="fără poză"}
+  else if(a==="imgdel"){const list=currentImgs();list.splice(+el.dataset.i,1);pendingImgs=list;renderImgsPick()}
+  else if(a==="imgleft"){const i=+el.dataset.i;const list=currentImgs();if(i>0){[list[i-1],list[i]]=[list[i],list[i-1]];pendingImgs=list;renderImgsPick()}}
+  else if(a==="imgright"){const i=+el.dataset.i;const list=currentImgs();if(i<list.length-1){[list[i+1],list[i]]=[list[i],list[i+1]];pendingImgs=list;renderImgsPick()}}
+  else if(a==="pgal")setGallery(+el.dataset.i)
+  else if(a==="pgalprev")setGallery(GALLERY.i-1)
+  else if(a==="pgalnext")setGallery(GALLERY.i+1)
+  else if(a==="heroreset"){S.texts.heroImg="";const pv=$("#heroPv");if(pv)pv.innerHTML=`<img src="${esc(IMGS.hero)}" alt="">`;toast("Bannerul implicit a fost restaurat — salvează textele")}
+  else if(a==="savetoken"){setGhToken(($("#ghTok")&&$("#ghTok").value||"").trim());toast("Token salvat doar pe acest dispozitiv")}
+  else if(a==="publish")publishSite()
+  else if(a==="dlcontent"){downloadContentJson(pubSnapshot(S));toast("Am descărcat content.json")}
+  else if(a==="loaddraft"){const d=loadDraft();if(!d){toast("Nu există draft local");return}S=d;HAS_UNPUBLISHED=true;toast("Draft local încărcat");renderAdmin();renderSite()}
   else if(a==="cnew"){S.cats.push({id:uid("c"),nume:"Categorie nouă",ico:"alt"});save(false);renderAdmin()}
   else if(a==="cdel"){if(S.products.some(p=>p.cat===id)){toast("Mută sau șterge întâi produsele din această categorie");return}S.cats=S.cats.filter(c=>c.id!==id);save("Categorie ștearsă");renderAdmin()}
   else if(a==="rnew"){S.rate.push({id:uid("r"),nume:"Finanțator nou",luni:"12",dobanda:null,nota:""});save(false);renderAdmin()}
   else if(a==="rdel"){S.rate.splice(+el.dataset.i,1);save("Șters");renderAdmin()}
   else if(a==="export"){const b=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const u=URL.createObjectURL(b);const l=document.createElement("a");l.href=u;l.download="urda-site-date.json";l.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
-  else if(a==="reset"){if(el.dataset.sure){S=clone(DEFAULTS);save("Conținutul inițial a fost restaurat");renderAdmin()}else{el.dataset.sure=1;el.textContent="Sigur? Se pierd modificările";setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent="Revino la conținutul inițial"}},3500)}}
+  else if(a==="reset"){if(el.dataset.sure){S=normalizeSite(clone(DEFAULTS));save("Conținutul inițial a fost restaurat");renderAdmin()}else{el.dataset.sure=1;el.textContent="Sigur? Se pierd modificările";setTimeout(()=>{if(el.isConnected){delete el.dataset.sure;el.textContent="Revino la conținutul inițial"}},3500)}}
 });
 document.addEventListener("change",e=>{
   const t=e.target;
@@ -1174,7 +1402,8 @@ document.addEventListener("change",e=>{
   else if(t.id==="cFin"){syncLuni();calc()}
   else if(t.id==="cLuni")calc();
   else if(t.id==="imgF"&&t.files[0])readImg(t.files[0]);
-  else if(t.id==="impF"&&t.files[0]){const fr=new FileReader();fr.onload=()=>{try{const d=JSON.parse(fr.result);if(!d||!Array.isArray(d.products)||!d.texts)throw 0;d.texts=Object.assign(clone(DEFAULTS.texts),d.texts);d.cats=d.cats||clone(DEFAULTS.cats);d.posts=d.posts||[];d.blog=Array.isArray(d.blog)?d.blog:clone(DEFAULTS.blog||[]);d.rate=d.rate||clone(DEFAULTS.rate);S=d;save("Date importate");renderAdmin()}catch(x){toast("Fișierul nu este o copie de siguranță validă")}};fr.readAsText(t.files[0])}
+  else if(t.id==="heroF"&&t.files[0]){compressImageFile(t.files[0]).then(data=>{S.texts.heroImg=data;const pv=$("#heroPv");if(pv)pv.innerHTML=`<img src="${esc(data)}" alt="">`;toast("Banner actualizat — apasă Salvează textele")}).catch(()=>toast("Fișierul ales nu este o imagine validă"))}
+  else if(t.id==="impF"&&t.files[0]){const fr=new FileReader();fr.onload=()=>{try{const d=JSON.parse(fr.result);if(!d||!Array.isArray(d.products)||!d.texts)throw 0;S=normalizeSite(d);save("Date importate");renderAdmin()}catch(x){toast("Fișierul nu este o copie de siguranță validă")}};fr.readAsText(t.files[0])}
 });
 document.addEventListener("input",e=>{
   const t=e.target;
@@ -1189,8 +1418,11 @@ document.addEventListener("submit",e=>{
   else if(f.id==="prodF"){
     const pret=numOrNull(d.pret),pv=numOrNull(d.pretVechi);
     if(pv!==null&&pret!==null&&pv<=pret){$("#perr").textContent="Prețul vechi trebuie să fie mai mare decât prețul actual.";return}
-    const o={nume:d.nume.trim(),cat:d.cat,pret,pretVechi:pv,putere:numOrNull(d.putere),autonomie:numOrNull(d.autonomie),viteza:numOrNull(d.viteza),desc:d.desc.trim(),dotari:d.dotari.trim(),faraPermis:!!d.faraPermis,activ:!!d.activ,exemplu:!!d.exemplu,img:pendingImg!==undefined?pendingImg:f.dataset.img};
+    const imgs=currentImgs();
+    const stoc=(d.stoc in STOC_MAP)?d.stoc:"in_stoc";
+    const o={nume:d.nume.trim(),cat:d.cat,pret,pretVechi:pv,putere:numOrNull(d.putere),autonomie:numOrNull(d.autonomie),viteza:numOrNull(d.viteza),desc:d.desc.trim(),dotari:d.dotari.trim(),faraPermis:!!d.faraPermis,activ:!!d.activ,exemplu:!!d.exemplu,imgs,img:imgs[0]||"",stoc};
     const id=f.dataset.id;if(id)Object.assign(S.products.find(x=>x.id===id),o);else S.products.unshift(Object.assign({id:uid("p")},o));
+    pendingImgs=undefined;
     if(save("Produs salvat")){closeModal();renderAdmin()}
   }
   else if(f.id==="postF"||f.id==="blogF"){
@@ -1202,7 +1434,7 @@ document.addEventListener("submit",e=>{
   }
   else if(f.id==="socialF"){["facebook","instagram","x","tiktok","youtube"].forEach(k=>{S.texts[k]=(d[k]||"").trim()});if(save("Conturi salvate"))renderSite()}
   else if(f.id==="contactF"){
-    const nume=$("#cn").value.trim(), prenume=$("#cp").value.trim(), telefon=$("#ct").value.trim(), mesaj=$("#cm").value.trim(), err=$("#cerr");
+    const nume=$("#cn").value.trim(), prenume=$("#cp").value.trim(), telefon=$("#ct").value.trim(), mesaj=$("#cm").value.trim(), err=$("#cerr"), btn=f.querySelector('button[type="submit"],button:not([type])');
     if($("#chp").value){f.reset();return}
     if(nume.length<2||prenume.length<2){err.textContent="Scrie numele și prenumele.";return}
     if((telefon.match(/\d/g)||[]).length<8){err.textContent="Telefonul pare incomplet.";return}
@@ -1212,12 +1444,20 @@ document.addEventListener("submit",e=>{
     box.unshift({id:uid("m"),t:now,nume,prenume,telefon,mesaj,read:false});
     if(!saveInbox(box)){err.textContent="Mesajul nu a putut fi salvat în acest browser.";return}
     track("contact",{});
-    f.reset();err.textContent="";
+    err.textContent="";
+    if(btn){btn.disabled=true;btn.textContent="Se trimite…"}
     sendMail({Nume:nume,Prenume:prenume,Telefon:telefon,Mesaj:mesaj}).then(ok=>{
-      toast(ok?"Mesajul a fost trimis. Te contactăm în curând.":"Mesajul a fost notat în administrarea din acest browser. Pentru un răspuns sigur, scrie-ne și pe WhatsApp.");
+      f.reset();
+      if(btn){btn.disabled=false;btn.textContent="Trimite mesajul"}
+      if(ok)toast("Mesajul a fost trimis pe e-mail. Te contactăm în curând.");
+      else toast("Mesajul e salvat local, dar e-mailul nu a putut fi confirmat. Scrie-ne și pe WhatsApp: "+(S.texts.telefon||""));
     });
   }
-  else if(f.id==="textF"){Object.keys(d).forEach(k=>S.texts[k]=d[k].trim());save("Texte salvate")}
+  else if(f.id==="textF"){
+    Object.keys(d).forEach(k=>{if(k==="heroImg")return;S.texts[k]=d[k].trim()});
+    /* heroImg already set by file picker / reset */
+    save("Texte salvate");renderSite();
+  }
   else if(f.id==="catF"){S.cats.forEach((c,i)=>{c.nume=(d["n"+i]||c.nume).trim();c.ico=d["i"+i]||c.ico});save("Categorii salvate");renderAdmin()}
   else if(f.id==="rateF"){S.rate.forEach((o,i)=>{o.nume=d["nume"+i].trim();o.nota=d["nota"+i].trim();o.luni=d["luni"+i].replace(/[^\d,]/g,"");o.dobanda=numOrNull(d["dob"+i])});save("Rate salvate");renderAdmin()}
 });
@@ -1225,7 +1465,21 @@ document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if($("#modal"
 window.addEventListener("resize",()=>{if(window.innerWidth>=900)setMenu(false)});
 $("#nav").addEventListener("click",()=>$("#nav").classList.remove("on"));
 
-renderSite();setAdmin(ADMIN);bootVisit();
+(async function boot(){
+  const remote=await fetchRemoteContent();
+  const draft=loadDraft();
+  if(remote){
+    S=remote;
+    if(draft){
+      try{HAS_UNPUBLISHED=JSON.stringify(pubSnapshot(draft))!==JSON.stringify(pubSnapshot(remote))}catch(e){HAS_UNPUBLISHED=false}
+      /* Admin pe acest dispozitiv: continuă pe draftul local; vizitatorii văd content.json public */
+      if(ADMIN&&HAS_UNPUBLISHED)S=draft;
+    }
+  }else{
+    S=draft||normalizeSite(clone(DEFAULTS));
+  }
+  renderSite();setAdmin(ADMIN);bootVisit();
+})();
 </script>
 </body>
 </html>

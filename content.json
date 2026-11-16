@@ -1,0 +1,458 @@
+{
+ "v": 1,
+ "texts": {
+  "anunt": "Reduceri în luna noiembrie · Rate fără avans · Livrare în județul Arad și împrejurimi",
+  "heroTitlu": "Mobilitate electrică *pentru toți*",
+  "heroSub": "Scutere electrice, tricicluri, vehicule utilitare și ATV-uri, direct din showroomul nostru din Lipova. Multe modele se conduc fără permis și pot fi cumpărate în rate.",
+  "slogan": "Mobilitate electrică. Viitor sustenabil.",
+  "despreTitlu": "Despre URDA Power Center",
+  "despre": "URDA Power Center este showroomul de mobilitate electrică din Lipova, județul Arad. Găsești la noi scutere electrice, tricicluri pentru pasageri și marfă, vehicule electrice cu cabină și ATV-uri, pe care le poți vedea și proba pe loc.\n\nTe ajutăm să alegi modelul potrivit, îți pregătim dosarul de rate și rămânem alături de tine după cumpărare, cu service și piese de schimb.",
+  "partener": "Partener Voltarom",
+  "telefon": "0771 012 065",
+  "whatsapp": "40771012065",
+  "email": "urdapowercenter@yahoo.com",
+  "adresa": "Str. Făgetului nr. 14, Lipova, 315400, jud. Arad",
+  "program": "Programul de lucru urmează să fie completat.\nSună-ne înainte de vizită: 0771 012 065",
+  "instagram": "urdapowercenter",
+  "facebook": "https://www.facebook.com/profile.php?id=61591977813864",
+  "x": "",
+  "tiktok": "",
+  "youtube": "",
+  "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Str.+F%C4%83getului+14%2C+Lipova%2C+Arad",
+  "rateIntro": "Alege produsul, avansul și finanțarea și vezi imediat rata lunară orientativă.",
+  "heroImg": "",
+  "quick1": "Modele care se conduc fără permis",
+  "quick2": "Plata în rate, inclusiv fără avans",
+  "quick3": "Livrare în județul Arad și împrejurimi",
+  "quick4": "Service, piese și garanție extinsă"
+ },
+ "cats": [
+  {
+   "id": "scutere",
+   "nume": "Scutere electrice",
+   "ico": "scuter"
+  },
+  {
+   "id": "tricicluri",
+   "nume": "Tricicluri",
+   "ico": "tri"
+  },
+  {
+   "id": "utilitare",
+   "nume": "Utilitare",
+   "ico": "util"
+  },
+  {
+   "id": "atv",
+   "nume": "ATV-uri",
+   "ico": "atv"
+  },
+  {
+   "id": "electro",
+   "nume": "Electrocasnice",
+   "ico": "electro"
+  }
+ ],
+ "products": [
+  {
+   "id": "p1",
+   "nume": "RDB Inspire",
+   "cat": "scutere",
+   "pret": 4500,
+   "pretVechi": 4900,
+   "putere": 2000,
+   "autonomie": 60,
+   "viteza": 25,
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:inspire",
+   "desc": "Scuter electric cu design modern și confort sporit, potrivit pentru drumurile de zi cu zi.",
+   "dotari": "Motor electric de 2000 W\nAutonomie de până la 60 km\nViteză maximă 25 km/h\nSe conduce fără permis\nDesign modern și confort sporit",
+   "imgs": [
+    "asset:inspire"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "p2",
+   "nume": "RDB Chilia Plus",
+   "cat": "scutere",
+   "pret": 4150,
+   "pretVechi": 4900,
+   "putere": 1000,
+   "autonomie": 55,
+   "viteza": 25,
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:chilia",
+   "desc": "Scuter electric economic, cu frână pe disc și afișaj digital.",
+   "dotari": "Motor electric de 1000 W\nAutonomie de până la 55 km\nViteză maximă 25 km/h\nFără permis de conducere\nFrână pe disc\nAfișaj digital și suspensie confortabilă",
+   "imgs": [
+    "asset:chilia"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "p3",
+   "nume": "Triciclu electric pasageri",
+   "cat": "tricicluri",
+   "pret": null,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": true,
+   "img": "asset:triciclu",
+   "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
+   "dotari": "",
+   "imgs": [
+    "asset:triciclu"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "p4",
+   "nume": "Triciclu cargo cu benă",
+   "cat": "utilitare",
+   "pret": null,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": true,
+   "img": "",
+   "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
+   "dotari": "",
+   "imgs": [],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "p5",
+   "nume": "Vehicul electric cu cabină",
+   "cat": "utilitare",
+   "pret": null,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": true,
+   "img": "",
+   "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
+   "dotari": "",
+   "imgs": [],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "p6",
+   "nume": "ATV electric",
+   "cat": "atv",
+   "pret": null,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": true,
+   "img": "",
+   "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
+   "dotari": "",
+   "imgs": [],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e1",
+   "nume": "Frigider combinat",
+   "cat": "electro",
+   "pret": 1899,
+   "pretVechi": 2299,
+   "spec": "348 L",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e1",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "348 L",
+   "imgs": [
+    "asset:e1"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e2",
+   "nume": "Mașină de spălat rufe",
+   "cat": "electro",
+   "pret": 1499,
+   "pretVechi": 1799,
+   "spec": "8 kg",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e2",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "8 kg",
+   "imgs": [
+    "asset:e2"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e3",
+   "nume": "Aragaz mixt",
+   "cat": "electro",
+   "pret": 1199,
+   "pretVechi": 1499,
+   "spec": "4 ochiuri",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e3",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "4 ochiuri",
+   "imgs": [
+    "asset:e3"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e4",
+   "nume": "Cuptor electric",
+   "cat": "electro",
+   "pret": 999,
+   "pretVechi": 1299,
+   "spec": "71 L",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e4",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "71 L",
+   "imgs": [
+    "asset:e4"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e5",
+   "nume": "Aspirator fără sac",
+   "cat": "electro",
+   "pret": 449,
+   "pretVechi": 599,
+   "spec": "2 L",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e5",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "2 L",
+   "imgs": [
+    "asset:e5"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e6",
+   "nume": "Televizor LED 43 inch",
+   "cat": "electro",
+   "pret": 1299,
+   "pretVechi": 1599,
+   "spec": "43 inch",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e6",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "43 inch",
+   "imgs": [
+    "asset:e6"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e7",
+   "nume": "Cafetieră espresso",
+   "cat": "electro",
+   "pret": 349,
+   "pretVechi": 449,
+   "spec": "15 bar",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e7",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "15 bar",
+   "imgs": [
+    "asset:e7"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e8",
+   "nume": "Cuptor cu microunde",
+   "cat": "electro",
+   "pret": 299,
+   "pretVechi": 399,
+   "spec": "20 L",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e8",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "20 L",
+   "imgs": [
+    "asset:e8"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e9",
+   "nume": "Aer condiționat",
+   "cat": "electro",
+   "pret": 1699,
+   "pretVechi": 2099,
+   "spec": "12000 BTU",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e9",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "12000 BTU",
+   "imgs": [
+    "asset:e9"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e10",
+   "nume": "Plită cu inducție",
+   "cat": "electro",
+   "pret": 899,
+   "pretVechi": 1149,
+   "spec": "4 zone",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e10",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "4 zone",
+   "imgs": [
+    "asset:e10"
+   ],
+   "stoc": "in_stoc"
+  }
+ ],
+ "posts": [
+  {
+   "id": "n1",
+   "titlu": "Dă startul reducerilor în luna noiembrie!",
+   "data": "",
+   "activ": true,
+   "img": "asset:post_reduceri",
+   "text": "Vino în showroom să descoperi ofertele.\nLipova, Str. Făgetului nr. 14 · 0771 012 065"
+  },
+  {
+   "id": "n2",
+   "titlu": "De la Shopping la Boarding, cu BT Direct",
+   "data": "",
+   "activ": true,
+   "img": "asset:post_bt",
+   "text": "Îți finanțezi achiziția vehiculului dorit în parteneriat cu BT Direct și poți câștiga:\n• 3 vouchere de vacanță de până la 3.000 euro\n• 30 de vouchere de carburant în valoare de 500 lei\n\nPerioada campaniei: 1 – 30 noiembrie."
+  },
+  {
+   "id": "n3",
+   "titlu": "Pregătim magazinul de electrocasnice",
+   "data": "",
+   "activ": true,
+   "img": "asset:post_electro",
+   "text": "Un nou proiect prinde contur la URDA Power Center! Lucrările sunt în plină desfășurare pentru amenajarea viitorului nostru magazin de electrocasnice.\n\nNe pregătim să extindem activitatea și să vă oferim o gamă și mai variată de produse."
+  }
+ ],
+ "blog": [
+  {
+   "id": "b1",
+   "titlu": "Showroomul din Lipova se pregătește și pentru electrocasnice",
+   "data": "2026-11-15",
+   "activ": true,
+   "img": "",
+   "text": "URDA Power Center rămâne locul din Lipova pentru scutere electrice, tricicluri, utilitare și ATV-uri. Pregătim și zona de electrocasnice, cu peste 1.000 de produse. Dacă știi deja ce cauți, scrie-ne din formularul de contact."
+  }
+ ],
+ "rate": [
+  {
+   "id": "r1",
+   "nume": "BT STAR",
+   "luni": "3",
+   "dobanda": 0,
+   "nota": "3 rate fără dobândă"
+  },
+  {
+   "id": "r2",
+   "nume": "Raiffeisen",
+   "luni": "4",
+   "dobanda": 0,
+   "nota": "4 rate fără dobândă"
+  },
+  {
+   "id": "r3",
+   "nume": "BT Direct",
+   "luni": "12,24,36,48,60",
+   "dobanda": null,
+   "nota": "Rate fără avans"
+  },
+  {
+   "id": "r4",
+   "nume": "TBI Bank",
+   "luni": "6,12,24,36",
+   "dobanda": null,
+   "nota": "Finanțare prin TBI Bank"
+  }
+ ]
+}
