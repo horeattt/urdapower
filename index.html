@@ -855,6 +855,31 @@ function downloadContentJson(obj){
   const b=new Blob([JSON.stringify(obj,null,1)],{type:"application/json"});
   const u=URL.createObjectURL(b);const l=document.createElement("a");l.href=u;l.download="content.json";l.click();setTimeout(()=>URL.revokeObjectURL(u),2000);
 }
+function utf8ToBase64(str){
+  const bytes=new TextEncoder().encode(str);
+  let bin="";const chunk=0x8000;
+  for(let i=0;i<bytes.length;i+=chunk){
+    bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk));
+  }
+  return btoa(bin);
+}
+function slimForPublish(obj){
+  const x=clone(obj);
+  let stripped=0;
+  const slimImg=v=>{
+    if(typeof v==="string"&&v.indexOf("data:image")===0&&v.length>120000){stripped++;return ""}
+    return v;
+  };
+  (x.products||[]).forEach(p=>{
+    if(p.img)p.img=slimImg(p.img);
+    if(Array.isArray(p.imgs))p.imgs=p.imgs.map(slimImg).filter(Boolean).slice(0,3);
+    p.img=p.img||(p.imgs&&p.imgs[0])||"";
+  });
+  (x.posts||[]).forEach(p=>{if(p.img)p.img=slimImg(p.img)});
+  (x.blog||[]).forEach(p=>{if(p.img)p.img=slimImg(p.img)});
+  if(x.texts&&x.texts.heroImg)x.texts.heroImg=slimImg(x.texts.heroImg);
+  return {payload:x,stripped};
+}
 async function publishToGitHub(contentStr){
   const token=getGhToken().trim();
   if(!token)return {ok:false,needToken:true};
@@ -864,15 +889,41 @@ async function publishToGitHub(contentStr){
   try{
     const gr=await fetch(api+"?ref=main",{headers});
     if(gr.ok){const j=await gr.json();sha=j.sha}
+    else if(gr.status===401||gr.status===403)return {ok:false,err:"Token invalid sau fără drept de scriere. Redeschide linkul de activare."};
     else if(gr.status!==404)return {ok:false,err:"Nu am putut citi content.json de pe GitHub ("+gr.status+")."};
-  }catch(e){return {ok:false,err:"Eroare de rețea la citirea de pe GitHub."}}
-  const body={message:"Actualizare automată site URDA Power Center",content:btoa(unescape(encodeURIComponent(contentStr))),branch:"main"};
+  }catch(e){return {ok:false,err:"Eroare de rețea la citirea de pe GitHub (posibil blocare browser/extensie)."}}
+  let publishStr=contentStr;
+  let stripped=0;
+  try{
+    const parsed=JSON.parse(contentStr);
+    const slim=slimForPublish(parsed);
+    publishStr=JSON.stringify(slim.payload,null,1);
+    stripped=slim.stripped;
+  }catch(e){}
+  let contentB64;
+  try{contentB64=utf8ToBase64(publishStr)}
+  catch(e){return {ok:false,err:"Conținutul e prea mare pentru publicare. Folosește poze mai mici."}}
+  if(contentB64.length>900000){
+    try{
+      const parsed=JSON.parse(publishStr);
+      (parsed.products||[]).forEach(p=>{if(typeof p.img==="string"&&p.img.indexOf("data:image")===0){p.img="";stripped++}if(Array.isArray(p.imgs))p.imgs=[]});
+      (parsed.posts||[]).forEach(p=>{if(typeof p.img==="string"&&p.img.indexOf("data:image")===0){p.img="";stripped++}});
+      publishStr=JSON.stringify(parsed,null,1);
+      contentB64=utf8ToBase64(publishStr);
+    }catch(e){}
+  }
+  if(contentB64.length>950000)return {ok:false,err:"Fișierul e prea mare pentru GitHub. Șterge pozele mari din produse și salvează din nou."};
+  const body={message:"Actualizare automată site URDA Power Center",content:contentB64,branch:"main"};
   if(sha)body.sha=sha;
   try{
     const pr=await fetch(api,{method:"PUT",headers,body:JSON.stringify(body)});
-    if(!pr.ok)return {ok:false,err:"Publicarea a eșuat ("+pr.status+"). Verifică tokenul (Contents: Write) pe horeattt/urdapower."};
-    return {ok:true};
-  }catch(e){return {ok:false,err:"Eroare de rețea la publicare."}}
+    if(pr.ok)return {ok:true,stripped};
+    let detail="";
+    try{const j=await pr.json();detail=(j&&j.message)||""}catch(e){}
+    if(pr.status===401||pr.status===403)return {ok:false,err:"Token respins de GitHub. Redeschide linkul de activare."};
+    if(pr.status===409||pr.status===422)return {ok:false,err:"Conflict la publicare. Reîncearcă Salvează. "+(detail||"")};
+    return {ok:false,err:"Publicarea a eșuat ("+pr.status+"). "+(detail||"Verifică conexiunea și tokenul.")};
+  }catch(e){return {ok:false,err:"Eroare de rețea la publicare. Încearcă alt browser sau dezactivează AdBlock pe urdapower.ro."}}
 }
 function queuePublish(){
   clearTimeout(publishTimer);
@@ -892,7 +943,7 @@ async function autoPublish(){
   publishing=false;
   if(res.ok){
     HAS_UNPUBLISHED=false;
-    toast((pendingSaveMsg||"Salvat")+" pe site");
+    toast((pendingSaveMsg||"Salvat")+" pe site"+(res.stripped?" · pozele foarte mari rămân doar local":""));
     pendingSaveMsg=null;
     if(ADMIN)renderAdmin();
     return;
