@@ -522,9 +522,9 @@
   },
   {
    "id": "rmws6vcr4c70",
-   "nume": "Finanțator nou",
-   "luni": "12",
-   "dobanda": null,
+   "nume": "Gratis",
+   "luni": "11",
+   "dobanda": 123,
    "nota": ""
   }
  ]
