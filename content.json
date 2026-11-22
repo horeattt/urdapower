@@ -366,28 +366,6 @@
    "stoc": "in_stoc"
   },
   {
-   "id": "e7",
-   "nume": "Cafetieră espresso",
-   "cat": "cafea",
-   "pret": 349,
-   "pretVechi": 449,
-   "spec": "15 bar",
-   "orientativ": true,
-   "putere": null,
-   "autonomie": null,
-   "viteza": null,
-   "faraPermis": false,
-   "activ": true,
-   "exemplu": false,
-   "img": "asset:e7",
-   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "15 bar",
-   "imgs": [
-    "asset:e7"
-   ],
-   "stoc": "in_stoc"
-  },
-  {
    "id": "e8",
    "nume": "Cuptor cu microunde",
    "cat": "microunde",
@@ -403,7 +381,7 @@
    "exemplu": false,
    "img": "asset:e8",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "20 L",
+   "dotari": "20 L hguscbuawbubaduvbdubv",
    "imgs": [
     "asset:e8"
    ],
