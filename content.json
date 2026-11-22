@@ -411,28 +411,6 @@
    "stoc": "in_stoc"
   },
   {
-   "id": "e10",
-   "nume": "Plită cu inducție",
-   "cat": "plite",
-   "pret": 899,
-   "pretVechi": 1149,
-   "spec": "4 zone",
-   "orientativ": true,
-   "putere": null,
-   "autonomie": null,
-   "viteza": null,
-   "faraPermis": false,
-   "activ": true,
-   "exemplu": false,
-   "img": "asset:e10",
-   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "4 zone",
-   "imgs": [
-    "asset:e10"
-   ],
-   "stoc": "in_stoc"
-  },
-  {
    "id": "e7",
    "nume": "Cafetieră espresso",
    "cat": "cafea",
