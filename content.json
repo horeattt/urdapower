@@ -30,27 +30,92 @@
   {
    "id": "scutere",
    "nume": "Scutere electrice",
-   "ico": "scuter"
+   "ico": "scuter",
+   "hub": "vehicule"
   },
   {
    "id": "tricicluri",
    "nume": "Tricicluri",
-   "ico": "tri"
+   "ico": "tri",
+   "hub": "vehicule"
+  },
+  {
+   "id": "trotinete",
+   "nume": "Trotinete",
+   "ico": "scuter",
+   "hub": "vehicule"
   },
   {
    "id": "utilitare",
    "nume": "Utilitare",
-   "ico": "util"
+   "ico": "util",
+   "hub": "vehicule"
   },
   {
    "id": "atv",
    "nume": "ATV-uri",
-   "ico": "atv"
+   "ico": "atv",
+   "hub": "vehicule"
   },
   {
-   "id": "electro",
-   "nume": "Electrocasnice",
-   "ico": "electro"
+   "id": "frigidere",
+   "nume": "Frigidere",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "spalatoare",
+   "nume": "Mașini de spălat",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "aragazuri",
+   "nume": "Aragazuri",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "cuptoare",
+   "nume": "Cuptoare",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "aspiratoare",
+   "nume": "Aspiratoare",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "tv",
+   "nume": "Televizoare",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "cafea",
+   "nume": "Aparate de cafea",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "microunde",
+   "nume": "Cuptoare cu microunde",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "clima",
+   "nume": "Aer condiționat",
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "plite",
+   "nume": "Plite",
+   "ico": "electro",
+   "hub": "electro"
   }
  ],
  "products": [
@@ -171,7 +236,7 @@
   {
    "id": "e1",
    "nume": "Frigider combinat",
-   "cat": "electro",
+   "cat": "frigidere",
    "pret": 1899,
    "pretVechi": 2299,
    "spec": "348 L",
@@ -193,7 +258,7 @@
   {
    "id": "e2",
    "nume": "Mașină de spălat rufe",
-   "cat": "electro",
+   "cat": "spalatoare",
    "pret": 1499,
    "pretVechi": 1799,
    "spec": "8 kg",
@@ -215,7 +280,7 @@
   {
    "id": "e3",
    "nume": "Aragaz mixt",
-   "cat": "electro",
+   "cat": "aragazuri",
    "pret": 1199,
    "pretVechi": 1499,
    "spec": "4 ochiuri",
@@ -237,7 +302,7 @@
   {
    "id": "e4",
    "nume": "Cuptor electric",
-   "cat": "electro",
+   "cat": "cuptoare",
    "pret": 999,
    "pretVechi": 1299,
    "spec": "71 L",
@@ -259,7 +324,7 @@
   {
    "id": "e5",
    "nume": "Aspirator fără sac",
-   "cat": "electro",
+   "cat": "aspiratoare",
    "pret": 449,
    "pretVechi": 599,
    "spec": "2 L",
@@ -281,7 +346,7 @@
   {
    "id": "e6",
    "nume": "Televizor LED 43 inch",
-   "cat": "electro",
+   "cat": "tv",
    "pret": 1299,
    "pretVechi": 1599,
    "spec": "43 inch",
@@ -303,7 +368,7 @@
   {
    "id": "e7",
    "nume": "Cafetieră espresso",
-   "cat": "electro",
+   "cat": "cafea",
    "pret": 349,
    "pretVechi": 449,
    "spec": "15 bar",
@@ -325,7 +390,7 @@
   {
    "id": "e8",
    "nume": "Cuptor cu microunde",
-   "cat": "electro",
+   "cat": "microunde",
    "pret": 299,
    "pretVechi": 399,
    "spec": "20 L",
@@ -347,7 +412,7 @@
   {
    "id": "e9",
    "nume": "Aer condiționat",
-   "cat": "electro",
+   "cat": "clima",
    "pret": 1699,
    "pretVechi": 2099,
    "spec": "12000 BTU",
@@ -369,7 +434,7 @@
   {
    "id": "e10",
    "nume": "Plită cu inducție",
-   "cat": "electro",
+   "cat": "plite",
    "pret": 899,
    "pretVechi": 1149,
    "spec": "4 zone",

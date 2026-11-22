@@ -50,6 +50,19 @@ header.top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);bac
 .banner-note svg{width:22px;height:22px;stroke:#152018;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .banner-note b{display:block;font-family:var(--disp);font-size:18px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;line-height:1}
 .banner-note small{display:block;margin-top:2px;color:#3d4a42;font-size:12.5px;font-weight:600}
+.hubs{display:grid;grid-template-columns:1fr;gap:10px;margin:10px 16px 0;position:relative;z-index:2}
+.hubs .banner-note{margin:0;cursor:pointer;border:0;width:100%;font:inherit;text-align:left}
+.hubs .banner-note[aria-pressed=true]{box-shadow:0 0 0 2px var(--g),0 10px 28px rgba(0,0,0,.22)}
+.hub-panel{margin:10px 16px 0;background:rgba(255,255,255,.97);border-radius:14px;padding:12px;box-shadow:0 10px 28px rgba(0,0,0,.16);display:none}
+.hub-panel.on{display:block}
+.hub-panel h3{margin:0 0 10px;font-family:var(--disp);font-size:16px;text-transform:uppercase;letter-spacing:.04em}
+.hub-panel .hub-subs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hub-panel button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;text-align:left;min-height:44px;font-weight:700}
+.hub-panel button:hover,.hub-panel button[aria-pressed=true]{border-color:var(--lime);background:#f4fbe8}
+.hub-panel .hub-all{grid-column:1/-1;background:var(--lime);border-color:var(--lime);font-family:var(--disp);text-transform:uppercase;letter-spacing:.03em}
+.asave{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#f4fbe8;border:1px solid #cfe8a0;border-radius:12px;padding:12px 14px;margin:0 0 16px}
+.asave p{margin:0;flex:1 1 220px;font-size:14px;color:#243028;font-weight:600;line-height:1.35}
+.asave .cta{display:flex;flex-wrap:wrap;gap:8px;margin:0}
 .pager{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:18px}
 .pager:empty{display:none}
 .pager button{min-width:44px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line2);background:#fff;font-weight:700;cursor:pointer;color:#152018}
@@ -352,7 +365,8 @@ footer a:hover{color:var(--accent)}
   .burger{display:none}
   .tel{width:auto;height:auto;padding:8px 16px;border-radius:999px}
   .tel span{display:inline}
-  .banner-note{position:absolute;left:12px;bottom:12px;margin:0;max-width:calc(100% - 24px)}
+  .hubs{position:absolute;left:12px;bottom:12px;margin:0;max-width:min(520px,calc(100% - 24px));grid-template-columns:1fr 1fr}
+  .hub-panel{margin:14px auto 0;max-width:min(640px,calc(100% - 32px));position:relative}
   .hero .banner{aspect-ratio:1500/625;object-position:center center;max-height:560px}
   .hero-band{padding:34px 0 40px}
   .hero-band .wrap{grid-template-columns:1.25fr .75fr;gap:36px}
@@ -398,7 +412,7 @@ footer a:hover{color:var(--accent)}
   <div class="wrap">
     <div class="brand">
       <a class="logo" href="#sus" aria-label="URDA Power Center"><b>URDA</b><span><i>POWER</i> CENTER</span></a>
-      <a class="logo-hint" href="#produse" data-act="cat" data-id="electro">Mobilitate și electrocasnice</a>
+      <a class="logo-hint" href="#categorii" data-act="hub" data-id="vehicule">Mobilitate și electrocasnice</a>
     </div>
     <button class="burger" data-act="menu" aria-label="Meniu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
     <nav class="main" id="nav">
@@ -417,7 +431,11 @@ footer a:hover{color:var(--accent)}
   <div class="hero">
     <div class="banner-wrap">
       <img class="banner" id="heroImg" alt="URDA Power Center — showroom de scutere, tricicluri și vehicule electrice">
-      <a class="banner-note" href="#produse" data-act="cat" data-id="electro"><i><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="1.5"/><path d="M6 10h12M9 6v2M9 14v3"/></svg></i><span><b>Electrocasnice</b><small>Peste 1.000 de produse, în același showroom</small></span></a>
+      <div class="hubs" id="hubs">
+        <button type="button" class="banner-note" data-act="hub" data-id="vehicule" aria-pressed="false"><i><svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="17" r="2.5"/><path d="M4 17h2M16 17h2M8 17c0-5 2-9 4-11h3l3 5h2"/><path d="M9 11h5"/></svg></i><span><b>Vehicule</b><small>Scutere, tricicluri, trotinete, ATV</small></span></button>
+        <button type="button" class="banner-note" data-act="hub" data-id="electro" aria-pressed="false"><i><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="1.5"/><path d="M6 10h12M9 6v2M9 14v3"/></svg></i><span><b>Electrocasnice</b><small>Toate subcategoriile din showroom</small></span></button>
+      </div>
+      <div class="hub-panel" id="hubPanel" hidden></div>
     </div>
     <div class="hero-band">
       <div class="wrap">
@@ -625,11 +643,21 @@ const DEFAULTS={
     quick4:"Service, piese și garanție extinsă"
   },
   cats:[
-    {id:"scutere",nume:"Scutere electrice",ico:"scuter"},
-    {id:"tricicluri",nume:"Tricicluri",ico:"tri"},
-    {id:"utilitare",nume:"Utilitare",ico:"util"},
-    {id:"atv",nume:"ATV-uri",ico:"atv"},
-    {id:"electro",nume:"Electrocasnice",ico:"electro"}
+    {id:"scutere",nume:"Scutere electrice",ico:"scuter",hub:"vehicule"},
+    {id:"tricicluri",nume:"Tricicluri",ico:"tri",hub:"vehicule"},
+    {id:"trotinete",nume:"Trotinete",ico:"scuter",hub:"vehicule"},
+    {id:"utilitare",nume:"Utilitare",ico:"util",hub:"vehicule"},
+    {id:"atv",nume:"ATV-uri",ico:"atv",hub:"vehicule"},
+    {id:"frigidere",nume:"Frigidere",ico:"electro",hub:"electro"},
+    {id:"spalatoare",nume:"Mașini de spălat",ico:"electro",hub:"electro"},
+    {id:"aragazuri",nume:"Aragazuri",ico:"electro",hub:"electro"},
+    {id:"cuptoare",nume:"Cuptoare",ico:"electro",hub:"electro"},
+    {id:"aspiratoare",nume:"Aspiratoare",ico:"electro",hub:"electro"},
+    {id:"tv",nume:"Televizoare",ico:"electro",hub:"electro"},
+    {id:"cafea",nume:"Aparate de cafea",ico:"electro",hub:"electro"},
+    {id:"microunde",nume:"Cuptoare cu microunde",ico:"electro",hub:"electro"},
+    {id:"clima",nume:"Aer condiționat",ico:"electro",hub:"electro"},
+    {id:"plite",nume:"Plite",ico:"electro",hub:"electro"}
   ],
   products:[
     {id:"p1",nume:"RDB Inspire",cat:"scutere",pret:4500,pretVechi:4900,putere:2000,autonomie:60,viteza:25,faraPermis:true,activ:true,exemplu:false,img:"asset:inspire",
@@ -644,25 +672,25 @@ const DEFAULTS={
      desc:"Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",dotari:""},
     {id:"p6",nume:"ATV electric",cat:"atv",pret:null,pretVechi:null,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:true,img:"",
      desc:"Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",dotari:""},
-    {id:"e1",nume:"Frigider combinat",cat:"electro",pret:1899,pretVechi:2299,spec:"348 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e1",
+    {id:"e1",nume:"Frigider combinat",cat:"frigidere",pret:1899,pretVechi:2299,spec:"348 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e1",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"348 L"},
-    {id:"e2",nume:"Mașină de spălat rufe",cat:"electro",pret:1499,pretVechi:1799,spec:"8 kg",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e2",
+    {id:"e2",nume:"Mașină de spălat rufe",cat:"spalatoare",pret:1499,pretVechi:1799,spec:"8 kg",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e2",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"8 kg"},
-    {id:"e3",nume:"Aragaz mixt",cat:"electro",pret:1199,pretVechi:1499,spec:"4 ochiuri",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e3",
+    {id:"e3",nume:"Aragaz mixt",cat:"aragazuri",pret:1199,pretVechi:1499,spec:"4 ochiuri",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e3",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"4 ochiuri"},
-    {id:"e4",nume:"Cuptor electric",cat:"electro",pret:999,pretVechi:1299,spec:"71 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e4",
+    {id:"e4",nume:"Cuptor electric",cat:"cuptoare",pret:999,pretVechi:1299,spec:"71 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e4",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"71 L"},
-    {id:"e5",nume:"Aspirator fără sac",cat:"electro",pret:449,pretVechi:599,spec:"2 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e5",
+    {id:"e5",nume:"Aspirator fără sac",cat:"aspiratoare",pret:449,pretVechi:599,spec:"2 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e5",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"2 L"},
-    {id:"e6",nume:"Televizor LED 43 inch",cat:"electro",pret:1299,pretVechi:1599,spec:"43 inch",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e6",
+    {id:"e6",nume:"Televizor LED 43 inch",cat:"tv",pret:1299,pretVechi:1599,spec:"43 inch",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e6",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"43 inch"},
-    {id:"e7",nume:"Cafetieră espresso",cat:"electro",pret:349,pretVechi:449,spec:"15 bar",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e7",
+    {id:"e7",nume:"Cafetieră espresso",cat:"cafea",pret:349,pretVechi:449,spec:"15 bar",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e7",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"15 bar"},
-    {id:"e8",nume:"Cuptor cu microunde",cat:"electro",pret:299,pretVechi:399,spec:"20 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e8",
+    {id:"e8",nume:"Cuptor cu microunde",cat:"microunde",pret:299,pretVechi:399,spec:"20 L",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e8",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"20 L"},
-    {id:"e9",nume:"Aer condiționat",cat:"electro",pret:1699,pretVechi:2099,spec:"12000 BTU",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e9",
+    {id:"e9",nume:"Aer condiționat",cat:"clima",pret:1699,pretVechi:2099,spec:"12000 BTU",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e9",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"12000 BTU"},
-    {id:"e10",nume:"Plită cu inducție",cat:"electro",pret:899,pretVechi:1149,spec:"4 zone",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e10",
+    {id:"e10",nume:"Plită cu inducție",cat:"plite",pret:899,pretVechi:1149,spec:"4 zone",orientativ:true,putere:null,autonomie:null,viteza:null,faraPermis:false,activ:true,exemplu:false,img:"asset:e10",
      desc:"Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",dotari:"4 zone"}
   ],
   posts:[
@@ -730,7 +758,41 @@ function migrate(d){
   if(!Array.isArray(d.products))d.products=[];
   const cargo=d.cats.find(c=>c.id==="cargo"),cab=d.cats.find(c=>c.id==="cabina");
   if(cargo&&cab){cargo.id="utilitare";cargo.nume="Utilitare";cargo.ico="util";d.cats=d.cats.filter(c=>c.id!=="cabina");d.products.forEach(p=>{if(p.cat==="cargo"||p.cat==="cabina")p.cat="utilitare"})}
-  if(!d.cats.some(c=>c.id==="electro"))d.cats.push({id:"electro",nume:"Electrocasnice",ico:"electro"});
+  const HUBS={scutere:"vehicule",tricicluri:"vehicule",trotinete:"vehicule",utilitare:"vehicule",atv:"vehicule",frigidere:"electro",spalatoare:"electro",aragazuri:"electro",cuptoare:"electro",aspiratoare:"electro",tv:"electro",cafea:"electro",microunde:"electro",clima:"electro",plite:"electro"};
+  const ELECTRO_SUBS=[
+    {id:"frigidere",nume:"Frigidere",ico:"electro"},
+    {id:"spalatoare",nume:"Mașini de spălat",ico:"electro"},
+    {id:"aragazuri",nume:"Aragazuri",ico:"electro"},
+    {id:"cuptoare",nume:"Cuptoare",ico:"electro"},
+    {id:"aspiratoare",nume:"Aspiratoare",ico:"electro"},
+    {id:"tv",nume:"Televizoare",ico:"electro"},
+    {id:"cafea",nume:"Aparate de cafea",ico:"electro"},
+    {id:"microunde",nume:"Cuptoare cu microunde",ico:"electro"},
+    {id:"clima",nume:"Aer condiționat",ico:"electro"},
+    {id:"plite",nume:"Plite",ico:"electro"}
+  ];
+  if(!d.cats.some(c=>c.id==="trotinete")){
+    const i=d.cats.findIndex(c=>c.id==="tricicluri");
+    d.cats.splice(i>=0?i+1:d.cats.length,0,{id:"trotinete",nume:"Trotinete",ico:"scuter",hub:"vehicule"});
+  }
+  ELECTRO_SUBS.forEach(s=>{if(!d.cats.some(c=>c.id===s.id))d.cats.push(Object.assign({hub:"electro"},s))});
+  const guessElectro=n=>{
+    n=(n||"").toLowerCase();
+    if(/frigider|congelator|combine/.test(n))return "frigidere";
+    if(/spălat|spalat|washing/.test(n))return "spalatoare";
+    if(/aragaz/.test(n))return "aragazuri";
+    if(/microunde/.test(n))return "microunde";
+    if(/cuptor/.test(n))return "cuptoare";
+    if(/aspirator/.test(n))return "aspiratoare";
+    if(/televizor|\btv\b/.test(n))return "tv";
+    if(/cafe|espresso|cafet/.test(n))return "cafea";
+    if(/aer condi|clima|\bbtu\b/.test(n))return "clima";
+    if(/plit/.test(n))return "plite";
+    return "frigidere";
+  };
+  d.products.forEach(p=>{if(p.cat==="electro")p.cat=guessElectro(p.nume)});
+  d.cats=d.cats.filter(c=>c.id!=="electro");
+  d.cats.forEach(c=>{if(!c.hub)c.hub=HUBS[c.id]||(c.ico==="electro"?"electro":"vehicule")});
   const ids=new Set(d.products.map(p=>p.id));
   DEFAULTS.products.filter(p=>String(p.id).startsWith("e")&&!ids.has(p.id)).forEach(p=>d.products.push(clone(p)));
   (d.products||[]).forEach(p=>{
@@ -746,6 +808,23 @@ function migrate(d){
   if(!T.quick4)T.quick4="Service, piese și garanție extinsă";
   if(T.heroImg==null)T.heroImg="";
 }
+const HUB_META={vehicule:{titlu:"Vehicule",sub:"Alege tipul de vehicul"},electro:{titlu:"Electrocasnice",sub:"Alege tipul de electrocasnice"}};
+function catsForHub(hub){return S.cats.filter(c=>(c.hub||"vehicule")===hub)}
+function hubForCat(id){const c=S.cats.find(x=>x.id===id);return c&&c.hub?c.hub:null}
+let HUB=null;
+function openHub(hub,scroll){
+  HUB=hub;F.cat="toate";PAGE=1;
+  document.querySelectorAll("#hubs [data-act=hub]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.id===hub?"true":"false"));
+  const panel=$("#hubPanel");if(!panel)return;
+  const subs=catsForHub(hub);const meta=HUB_META[hub]||{titlu:hub,sub:""};
+  panel.hidden=false;panel.classList.add("on");
+  panel.innerHTML=`<h3>${esc(meta.titlu)} — ${esc(meta.sub)}</h3><div class="hub-subs"><button type="button" class="hub-all" data-act="huball" data-id="${esc(hub)}">Toate din ${esc(meta.titlu)}</button>${subs.map(c=>`<button type="button" data-act="cat" data-id="${esc(c.id)}">${esc(c.nume)}</button>`).join("")}</div>`;
+  renderCats();renderGrid();
+  if(scroll!==false){const el=document.getElementById("categorii")||document.getElementById("produse");if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
+}
+function showHubAll(hub){
+  HUB=hub;F.cat="toate";PAGE=1;renderCats();renderGrid();$("#produse").scrollIntoView({behavior:"smooth"});
+}
 function pubSnapshot(d){
   const x=clone(d);
   if(x.texts){delete x.texts.githubToken;delete x.texts.ghToken}
@@ -753,7 +832,7 @@ function pubSnapshot(d){
 }
 function markUnpublished(){HAS_UNPUBLISHED=true}
 function save(msg){
-  try{localStorage.setItem(KEY,JSON.stringify(S));HAS_UNPUBLISHED=true;if(msg!==false)toast(msg||"Salvat (draft local)");return true}
+  try{localStorage.setItem(KEY,JSON.stringify(S));HAS_UNPUBLISHED=true;if(msg!==false)toast((msg||"Salvat")+" · pe acest calculator (apoi Publică pe site)");return true}
   catch(e){toast("Nu s-a putut salva în browser. Încearcă poze mai mici sau exportă o copie de siguranță.");return false}
 }
 function getGhToken(){try{return localStorage.getItem(GH_TOKEN_KEY)||""}catch(e){return ""}}
@@ -890,15 +969,20 @@ function renderSite(){
 function visibleProducts(){return S.products.filter(p=>p.activ!==false)}
 function renderCats(){
   const vp=visibleProducts();
-  $("#cats").innerHTML=S.cats.map(c=>{const n=vp.filter(p=>p.cat===c.id).length;const u=c.id==="electro"?(n===1?"produs":"produse"):(n===1?"model":"modele");return `<button class="catbtn" data-act="cat" data-id="${esc(c.id)}">${ICO[c.ico]||ICO.alt}<b>${esc(c.nume)}</b><small>${n} ${u}</small></button>`}).join("");
-  $("#chips").innerHTML=[{id:"toate",nume:"Toate"},...S.cats].map(c=>`<button class="chip" data-act="cat" data-id="${esc(c.id)}" aria-pressed="${F.cat===c.id}">${esc(c.nume)}</button>`).join("");
+  const list=HUB?catsForHub(HUB):S.cats;
+  $("#cats").innerHTML=`<button class="catbtn" data-act="hub" data-id="vehicule">${ICO.scuter}<b>Vehicule</b><small>${vp.filter(p=>hubForCat(p.cat)==="vehicule").length} modele</small></button><button class="catbtn" data-act="hub" data-id="electro">${ICO.electro}<b>Electrocasnice</b><small>${vp.filter(p=>hubForCat(p.cat)==="electro").length} produse</small></button>`+list.map(c=>{const n=vp.filter(p=>p.cat===c.id).length;const u=(c.hub==="electro")?(n===1?"produs":"produse"):(n===1?"model":"modele");return `<button class="catbtn" data-act="cat" data-id="${esc(c.id)}">${ICO[c.ico]||ICO.alt}<b>${esc(c.nume)}</b><small>${n} ${u}</small></button>`}).join("");
+  const chipCats=HUB?catsForHub(HUB):S.cats;
+  $("#chips").innerHTML=[{id:"toate",nume:HUB?"Toate din "+((HUB_META[HUB]||{}).titlu||"hub"):"Toate"},...chipCats].map(c=>`<button class="chip" data-act="${c.id==="toate"&&HUB?"huball":"cat"}" data-id="${esc(c.id==="toate"&&HUB?HUB:c.id)}" aria-pressed="${(c.id==="toate"?F.cat==="toate":F.cat===c.id)}">${esc(c.nume)}</button>`).join("");
   const prices=vp.map(p=>p.pret).filter(Boolean);const mx=Math.max(1000,...prices);const top=Math.ceil(mx/500)*500;
   const r=$("#fmax");r.min=500;r.max=top;r.step=100;if(F.max===null||F.max>top)F.max=top;r.value=F.max;
   $("#fmaxTxt").textContent=F.max>=top?"oricât":lei(F.max);r.dataset.top=top;
 }
 function filtered(){
   const top=Number($("#fmax").dataset.top);const q=F.q.trim().toLowerCase();
-  let l=visibleProducts().filter(p=>(F.cat==="toate"||p.cat===F.cat)&&(!F.permis||p.faraPermis)&&(!F.promo||disc(p)>0)&&(F.max>=top||(p.pret&&p.pret<=F.max))&&(!q||(p.nume+" "+catName(p.cat)+" "+(p.desc||"")).toLowerCase().includes(q)));
+  let l=visibleProducts().filter(p=>{
+    const inCat=F.cat==="toate"?(HUB?hubForCat(p.cat)===HUB:true):p.cat===F.cat;
+    return inCat&&(!F.permis||p.faraPermis)&&(!F.promo||disc(p)>0)&&(F.max>=top||(p.pret&&p.pret<=F.max))&&(!q||(p.nume+" "+catName(p.cat)+" "+(p.desc||"")).toLowerCase().includes(q));
+  });
   const inf=v=>v==null?Infinity:v;
   if(F.sort==="pasc")l.sort((a,b)=>inf(a.pret)-inf(b.pret));
   else if(F.sort==="pdesc")l.sort((a,b)=>(b.pret||0)-(a.pret||0));
@@ -1151,7 +1235,7 @@ function closeModal(){$("#modal").classList.remove("on");if(!$("#admin").classLi
 /* ============ ADMIN ============ */
 let ADMIN=false;try{ADMIN=sessionStorage.getItem("urda_admin")==="1"}catch(e){}let searchT;
 let TAB="produse";let pendingImg;
-const TABS=[["produse","Produse"],["postari","Postări"],["blog","Blog"],["mesaje","Mesaje"],["statistici","Statistici"],["social","Social media"],["texte","Texte și contact"],["categorii","Categorii"],["rate","Rate"],["backup","Copie de siguranță"]];
+const TABS=[["produse","Produse"],["postari","Postări"],["blog","Blog"],["mesaje","Mesaje"],["statistici","Statistici"],["social","Social media"],["texte","Texte și contact"],["categorii","Categorii"],["rate","Rate"],["backup","Salvare"]];
 
 function loginDlg(){
   if(ADMIN){openAdmin();return}
@@ -1168,6 +1252,7 @@ function closeAdmin(){$("#admin").classList.remove("on");document.body.style.ove
 function renderAdmin(){
   const unread=inbox().filter(m=>!m.read).length;$("#atabs").innerHTML=TABS.map(t=>`<button role="tab" data-act="tab" data-id="${t[0]}" aria-selected="${TAB===t[0]}">${t[1]}${t[0]==="mesaje"&&unread?" ("+unread+")":""}</button>`).join("");
   const B=$("#abody");
+  const saveBar=`<div class="asave"><p>${HAS_UNPUBLISHED?"Ai modificări pe acest calculator. Publică-le ca să apară pe site pentru toți.":"Totul e publicat. Editezi → se salvează aici → Publică pe site când e gata."}</p><div class="cta"><button type="button" class="btn sm" data-act="publish">Publică pe site</button><button type="button" class="btn sm ghost" data-act="export">Descarcă copia</button></div></div>`;
   const stats=`<div class="stats"><div class="stat"><b>${S.products.length}</b><span>produse în catalog</span></div><div class="stat"><b>${S.products.filter(p=>p.exemplu).length}</b><span>exemple de completat</span></div><div class="stat"><b>${S.products.filter(p=>disc(p)>0).length}</b><span>produse la reducere</span></div><div class="stat"><b>${S.posts.filter(p=>p.activ!==false).length}</b><span>postări publicate</span></div></div>`;
   if(TAB==="produse"){
     B.innerHTML=stats+`<div class="ahead"><h3>Produse</h3><button class="btn sm" data-act="pnew">+ Adaugă produs</button></div>`+
@@ -1207,7 +1292,7 @@ function renderAdmin(){
   }
   else if(TAB==="categorii"){
     B.innerHTML=`<div class="ahead"><h3>Categorii</h3></div><form id="catF" class="panel">
-      ${S.cats.map((c,i)=>`<div class="frow" style="margin-bottom:10px"><input class="inp" name="n${i}" value="${esc(c.nume)}" aria-label="Nume categorie"><select class="inp" name="i${i}" style="flex:0 1 200px" aria-label="Pictogramă">${[["scuter","Scuter"],["tri","Triciclu"],["util","Utilitar"],["cargo","Cargo"],["cab","Cabină"],["atv","ATV"],["electro","Electrocasnice"],["alt","Altele"]].map(o=>`<option value="${o[0]}" ${c.ico===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select><span class="count">${S.products.filter(p=>p.cat===c.id).length} produse</span><button type="button" class="btn sm danger" data-act="cdel" data-id="${esc(c.id)}">Șterge</button></div>`).join("")}
+      ${S.cats.map((c,i)=>`<div class="frow" style="margin-bottom:10px"><input class="inp" name="n${i}" value="${esc(c.nume)}" aria-label="Nume categorie"><select class="inp" name="h${i}" style="flex:0 1 160px" aria-label="Grup">${[["vehicule","Vehicule"],["electro","Electrocasnice"]].map(o=>`<option value="${o[0]}" ${(c.hub||"vehicule")===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select><select class="inp" name="i${i}" style="flex:0 1 160px" aria-label="Pictogramă">${[["scuter","Scuter"],["tri","Triciclu"],["util","Utilitar"],["cargo","Cargo"],["cab","Cabină"],["atv","ATV"],["electro","Electrocasnice"],["alt","Altele"]].map(o=>`<option value="${o[0]}" ${c.ico===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select><span class="count">${S.products.filter(p=>p.cat===c.id).length} produse</span><button type="button" class="btn sm danger" data-act="cdel" data-id="${esc(c.id)}">Șterge</button></div>`).join("")}
       <div class="cta" style="margin-top:14px"><button class="btn">Salvează categoriile</button><button type="button" class="btn ghost" data-act="cnew">+ Categorie nouă</button></div>
       <p class="note">O categorie poate fi ștearsă doar dacă nu mai are produse.</p></form>`;
   }
@@ -1246,19 +1331,24 @@ function renderAdmin(){
   }
   else if(TAB==="backup"){
     const tok=getGhToken();
-    B.innerHTML=`${HAS_UNPUBLISHED?`<div class="draftban">Ai modificări locale nepublicate. Apasă <b>Publică pe site (pentru toți)</b> ca vizitatorii să le vadă pe www.urdapower.ro.</div>`:""}
-      <div class="ahead"><h3>Publicare pe site</h3></div><div class="panel">
-      <p style="margin-top:0"><b>Publică pe site (pentru toți)</b> scrie fișierul <code>content.json</code> pe GitHub (branch main), ca toată lumea să vadă aceleași produse și texte. Tokenul se păstrează doar în acest browser, nu în content.json.</p>
-      <div class="fld"><label for="ghTok">Token GitHub (fine-grained, Contents: Write pe horeattt/urdapower)</label>
+    B.innerHTML=`${HAS_UNPUBLISHED?`<div class="draftban">Ai modificări nesalvate pe site-ul public. Apasă butonul verde <b>Publică pe site</b> mai jos.</div>`:""}
+      <div class="ahead"><h3>Cum salvezi (3 pași)</h3></div><div class="panel">
+      <ol style="margin:0 0 14px;padding-left:20px;line-height:1.6;font-weight:600;color:#243028">
+        <li>Editezi produsele / textele — se salvează automat pe acest calculator.</li>
+        <li>Apasă <b>Publică pe site</b> — apar pentru toți pe www.urdapower.ro (1–2 minute).</li>
+        <li>Opțional: <b>Descarcă copia</b> ca backup pe calculator.</li>
+      </ol>
+      <div class="fld"><label for="ghTok">Token GitHub (o singură dată; Contents: Write pe horeattt/urdapower)</label>
         <input class="inp" id="ghTok" type="password" autocomplete="off" value="${esc(tok)}" placeholder="github_pat_… sau ghp_…"></div>
-      <div class="cta"><button type="button" class="btn" data-act="savetoken">Salvează tokenul</button><button type="button" class="btn" data-act="publish">Publică pe site (pentru toți)</button><button type="button" class="btn ghost" data-act="dlcontent">Descarcă content.json</button></div>
-      <p class="note">Fără token: descarcă <code>content.json</code> și înlocuiește fișierul în repo (sau cere agentului). Cu token: un singur click publică pe site. După publicare, GitHub Pages poate dura 1–2 minute.</p></div>
-      <div class="ahead"><h3>Copie de siguranță</h3></div><div class="panel">
-      <p style="margin-top:0">Modificările din admin se salvează local ca draft. Exportă periodic o copie, ca să o poți restaura sau muta pe alt calculator.</p>
-      <div class="cta"><button class="btn" data-act="export">Exportă datele (fișier .json)</button><label class="btn ghost" style="cursor:pointer">Importă un fișier<input type="file" id="impF" accept="application/json,.json" hidden></label><button class="btn ghost" data-act="loaddraft">Încarcă draft local</button><button class="btn danger" data-act="reset">Revino la conținutul inițial</button></div></div>`;
+      <div class="cta"><button type="button" class="btn" data-act="publish">Publică pe site</button><button type="button" class="btn ghost" data-act="savetoken">Salvează tokenul</button><button type="button" class="btn ghost" data-act="dlcontent">Descarcă content.json</button></div>
+      <p class="note">Fără token: descarcă content.json și dă-l agentului / înlocuiește-l în repo. Tokenul rămâne doar în acest browser.</p></div>
+      <div class="ahead"><h3>Backup / alt calculator</h3></div><div class="panel">
+      <div class="cta"><button class="btn" data-act="export">Descarcă copia (.json)</button><label class="btn ghost" style="cursor:pointer">Încarcă o copie<input type="file" id="impF" accept="application/json,.json" hidden></label><button class="btn ghost" data-act="loaddraft">Încarcă draft local</button><button class="btn danger" data-act="reset">Revino la conținutul inițial</button></div></div>`;
   }
   if(TAB!=="backup"&&HAS_UNPUBLISHED){
-    B.insertAdjacentHTML("afterbegin",`<div class="draftban">Ai modificări locale nepublicate. Du-te la „Copie de siguranță” → <b>Publică pe site (pentru toți)</b>.</div>`);
+    B.insertAdjacentHTML("afterbegin", saveBar);
+  if(TAB!=="backup"&&HAS_UNPUBLISHED){
+    B.insertAdjacentHTML("afterbegin",`<div class="draftban">Ai modificări nepublicate. Apasă <b>Publică pe site</b> din bara verde (sau din Salvare).</div>`);
   }
 }
 
@@ -1346,9 +1436,11 @@ document.addEventListener("click",e=>{
   if(el.matches("input[type=checkbox]"))return;
   const a=el.dataset.act,id=el.dataset.id;
   if(a==="menu")setMenu(!$("#nav").classList.contains("on"));
-  else if(a==="cat"){const cn=id==="toate"?"Toate":catName(id);track("click",{name:cn});F.cat=id;PAGE=1;renderCats();renderGrid();if(!el.classList.contains("chip"))$("#produse").scrollIntoView()}
+  else if(a==="hub"){e.preventDefault();track("click",{name:(HUB_META[id]||{}).titlu||id});openHub(id)}
+  else if(a==="huball"){track("click",{name:"Toate "+((HUB_META[id]||{}).titlu||id)});showHubAll(id)}
+  else if(a==="cat"){const cn=id==="toate"?"Toate":catName(id);track("click",{name:cn});const h=hubForCat(id);if(h)HUB=h;F.cat=id;PAGE=1;renderCats();renderGrid();if(!el.classList.contains("chip"))$("#produse").scrollIntoView()}
   else if(a==="page"){PAGE=+id||1;renderGrid();$("#produse").scrollIntoView()}
-  else if(a==="resetf"){F={q:"",cat:"toate",permis:false,promo:false,max:null,sort:"rec"};PAGE=1;$("#fq").value="";$("#fpermis").checked=$("#fpromo").checked=false;$("#fsort").value="rec";renderCats();renderGrid()}
+  else if(a==="resetf"){HUB=null;F={q:"",cat:"toate",permis:false,promo:false,max:null,sort:"rec"};PAGE=1;$("#fq").value="";$("#fpermis").checked=$("#fpromo").checked=false;$("#fsort").value="rec";const hp=$("#hubPanel");if(hp){hp.classList.remove("on");hp.hidden=true;hp.innerHTML=""}document.querySelectorAll("#hubs [data-act=hub]").forEach(b=>b.setAttribute("aria-pressed","false"));renderCats();renderGrid()}
   else if(a==="prod")openProd(id);
   else if(a==="close")closeModal();
   else if(a==="showcmp")showCmp();
@@ -1385,7 +1477,7 @@ document.addEventListener("click",e=>{
   else if(a==="publish")publishSite()
   else if(a==="dlcontent"){downloadContentJson(pubSnapshot(S));toast("Am descărcat content.json")}
   else if(a==="loaddraft"){const d=loadDraft();if(!d){toast("Nu există draft local");return}S=d;HAS_UNPUBLISHED=true;toast("Draft local încărcat");renderAdmin();renderSite()}
-  else if(a==="cnew"){S.cats.push({id:uid("c"),nume:"Categorie nouă",ico:"alt"});save(false);renderAdmin()}
+  else if(a==="cnew"){S.cats.push({id:uid("c"),nume:"Categorie nouă",ico:"alt",hub:"vehicule"});save(false);renderAdmin()}
   else if(a==="cdel"){if(S.products.some(p=>p.cat===id)){toast("Mută sau șterge întâi produsele din această categorie");return}S.cats=S.cats.filter(c=>c.id!==id);save("Categorie ștearsă");renderAdmin()}
   else if(a==="rnew"){S.rate.push({id:uid("r"),nume:"Finanțator nou",luni:"12",dobanda:null,nota:""});save(false);renderAdmin()}
   else if(a==="rdel"){S.rate.splice(+el.dataset.i,1);save("Șters");renderAdmin()}
@@ -1458,7 +1550,7 @@ document.addEventListener("submit",e=>{
     /* heroImg already set by file picker / reset */
     save("Texte salvate");renderSite();
   }
-  else if(f.id==="catF"){S.cats.forEach((c,i)=>{c.nume=(d["n"+i]||c.nume).trim();c.ico=d["i"+i]||c.ico});save("Categorii salvate");renderAdmin()}
+  else if(f.id==="catF"){S.cats.forEach((c,i)=>{c.nume=(d["n"+i]||c.nume).trim();c.ico=d["i"+i]||c.ico;c.hub=d["h"+i]||c.hub||"vehicule"});save("Categorii salvate");renderAdmin()}
   else if(f.id==="rateF"){S.rate.forEach((o,i)=>{o.nume=d["nume"+i].trim();o.nota=d["nota"+i].trim();o.luni=d["luni"+i].replace(/[^\d,]/g,"");o.dobanda=numOrNull(d["dob"+i])});save("Rate salvate");renderAdmin()}
 });
 document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if($("#modal").classList.contains("on"))closeModal();else setMenu(false)});
