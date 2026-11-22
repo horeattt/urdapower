@@ -885,13 +885,6 @@ async function publishToGitHub(contentStr){
   if(!token)return {ok:false,needToken:true};
   const api="https://api.github.com/repos/horeattt/urdapower/contents/content.json";
   const headers={Accept:"application/vnd.github+json","Content-Type":"application/json",Authorization:"Bearer "+token,"X-GitHub-Api-Version":"2022-11-28"};
-  let sha;
-  try{
-    const gr=await fetch(api+"?ref=main",{headers});
-    if(gr.ok){const j=await gr.json();sha=j.sha}
-    else if(gr.status===401||gr.status===403)return {ok:false,err:"Token invalid sau fără drept de scriere. Redeschide linkul de activare."};
-    else if(gr.status!==404)return {ok:false,err:"Nu am putut citi content.json de pe GitHub ("+gr.status+")."};
-  }catch(e){return {ok:false,err:"Eroare de rețea la citirea de pe GitHub (posibil blocare browser/extensie)."}}
   let publishStr=contentStr;
   let stripped=0;
   try{
@@ -913,21 +906,44 @@ async function publishToGitHub(contentStr){
     }catch(e){}
   }
   if(contentB64.length>950000)return {ok:false,err:"Fișierul e prea mare pentru GitHub. Șterge pozele mari din produse și salvează din nou."};
-  const body={message:"Actualizare automată site URDA Power Center",content:contentB64,branch:"main"};
-  if(sha)body.sha=sha;
-  try{
-    const pr=await fetch(api,{method:"PUT",headers,body:JSON.stringify(body)});
-    if(pr.ok)return {ok:true,stripped};
-    let detail="";
-    try{const j=await pr.json();detail=(j&&j.message)||""}catch(e){}
-    if(pr.status===401||pr.status===403)return {ok:false,err:"Token respins de GitHub. Redeschide linkul de activare."};
-    if(pr.status===409||pr.status===422)return {ok:false,err:"Conflict la publicare. Reîncearcă Salvează. "+(detail||"")};
-    return {ok:false,err:"Publicarea a eșuat ("+pr.status+"). "+(detail||"Verifică conexiunea și tokenul.")};
-  }catch(e){return {ok:false,err:"Eroare de rețea la publicare. Încearcă alt browser sau dezactivează AdBlock pe urdapower.ro."}}
+  async function fetchSha(){
+    const gr=await fetch(api+"?ref=main&_="+Date.now(),{headers,cache:"no-store"});
+    if(gr.ok){const j=await gr.json();return {ok:true,sha:j.sha}}
+    if(gr.status===401||gr.status===403)return {ok:false,err:"Token invalid sau fără drept de scriere. Redeschide linkul de activare."};
+    if(gr.status===404)return {ok:true,sha:null};
+    return {ok:false,err:"Nu am putut citi content.json de pe GitHub ("+gr.status+")."};
+  }
+  let lastDetail="";
+  for(let attempt=0;attempt<4;attempt++){
+    let sha;
+    try{
+      const sh=await fetchSha();
+      if(!sh.ok)return sh;
+      sha=sh.sha;
+    }catch(e){return {ok:false,err:"Eroare de rețea la citirea de pe GitHub (posibil blocare browser/extensie)."}}
+    const body={message:"Actualizare automată site URDA Power Center",content:contentB64,branch:"main"};
+    if(sha)body.sha=sha;
+    try{
+      const pr=await fetch(api,{method:"PUT",headers,body:JSON.stringify(body),cache:"no-store"});
+      if(pr.ok)return {ok:true,stripped};
+      let detail="";
+      try{const j=await pr.json();detail=(j&&j.message)||""}catch(e){}
+      lastDetail=detail;
+      if(pr.status===401||pr.status===403)return {ok:false,err:"Token respins de GitHub. Redeschide linkul de activare."};
+      const shaConflict=pr.status===409||pr.status===422||/does not match/i.test(detail);
+      if(shaConflict&&attempt<3){
+        await new Promise(r=>setTimeout(r,200+attempt*250));
+        continue;
+      }
+      if(shaConflict)return {ok:false,err:"Conflict la publicare. Așteaptă 1 secundă și apasă Salvează din nou."};
+      return {ok:false,err:"Publicarea a eșuat ("+pr.status+"). "+(detail||"Verifică conexiunea și tokenul.")};
+    }catch(e){return {ok:false,err:"Eroare de rețea la publicare. Încearcă alt browser sau dezactivează AdBlock pe urdapower.ro."}}
+  }
+  return {ok:false,err:"Conflict la publicare. Așteaptă 1 secundă și apasă Salvează din nou. "+(lastDetail||"")};
 }
 function queuePublish(){
   clearTimeout(publishTimer);
-  publishTimer=setTimeout(()=>{autoPublish()},350);
+  publishTimer=setTimeout(()=>{autoPublish()},600);
 }
 async function autoPublish(){
   if(publishing){queuePublish();return}
