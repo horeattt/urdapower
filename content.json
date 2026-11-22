@@ -153,7 +153,7 @@
    "activ": true,
    "exemplu": false,
    "img": "asset:chilia",
-   "desc": "Scuter electric economic, cu frână pe disc și afișaj digital.",
+   "desc": "Scuter electric economic, cu frână pe disc și afișaj digital.   vevefvfvef",
    "dotari": "Motor electric de 1000 W\nAutonomie de până la 55 km\nViteză maximă 25 km/h\nFără permis de conducere\nFrână pe disc\nAfișaj digital și suspensie confortabilă",
    "imgs": [
     "asset:chilia"
@@ -230,7 +230,7 @@
    "exemplu": true,
    "img": "",
    "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
-   "dotari": "",
+   "dotari": "testetetete",
    "imgs": [],
    "stoc": "in_stoc"
   },
@@ -448,7 +448,7 @@
    "exemplu": false,
    "img": "asset:e7",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "15 bar",
+   "dotari": "15 bar sdgsdghhggf",
    "imgs": [
     "asset:e7"
    ],
