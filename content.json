@@ -117,6 +117,12 @@
    "nume": "Plite",
    "ico": "electro",
    "hub": "electro"
+  },
+  {
+   "id": "cmws6uuuakbd",
+   "nume": "Categorie nouă",
+   "ico": "alt",
+   "hub": "vehicule"
   }
  ],
  "products": [
