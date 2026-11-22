@@ -519,6 +519,13 @@
    "luni": "6,12,24,36",
    "dobanda": null,
    "nota": "Finanțare prin TBI Bank"
+  },
+  {
+   "id": "rmws6vcr4c70",
+   "nume": "Finanțator nou",
+   "luni": "12",
+   "dobanda": null,
+   "nota": ""
   }
  ]
 }
