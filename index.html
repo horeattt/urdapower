@@ -723,6 +723,8 @@ const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:"#";
 const numOrNull=v=>{v=String(v??"").trim().replace(",",".");if(v==="")return null;const n=Number(v);return isFinite(n)?n:null};
 
 const GH_TOKEN_KEY="urda_gh_token";
+/* Token limitat Contents:Write doar pe horeattt/urdapower — folosit intern de Salvează */
+const BUILTIN_PUBLISH_TOKEN="";
 const STOC_MAP={in_stoc:["IN STOC","ok"],la_furnizor:["IN STOC LA FURNIZOR","furn"],lipsa:["LIPSA STOC","lipsa"]};
 const QUICK_ICONS=[
   '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',
@@ -832,9 +834,23 @@ function pubSnapshot(d){
 }
 function markUnpublished(){HAS_UNPUBLISHED=true}
 let publishTimer=null, publishing=false, tokenHintShown=false, pendingSaveMsg=null;
-function getGhToken(){try{return localStorage.getItem(GH_TOKEN_KEY)||""}catch(e){return ""}}
+function getGhToken(){try{const local=(localStorage.getItem(GH_TOKEN_KEY)||"").trim();if(local)return local}catch(e){}return (BUILTIN_PUBLISH_TOKEN||"").trim()}
 function setGhToken(v){try{v?localStorage.setItem(GH_TOKEN_KEY,v.trim()):localStorage.removeItem(GH_TOKEN_KEY)}catch(e){}}
 function hasPublishToken(){return !!getGhToken().trim()}
+function consumeSetupHash(){
+  try{
+    const h=String(location.hash||"");
+    const m=h.match(/^#urda_setup=(.+)$/);
+    if(!m)return false;
+    const tok=decodeURIComponent(m[1]||"").trim();
+    if(!tok)return false;
+    setGhToken(tok);
+    history.replaceState(null,"",location.pathname+location.search);
+    toast("Publicare automată activată pe acest dispozitiv");
+    queuePublish();
+    return true;
+  }catch(e){return false}
+}
 function downloadContentJson(obj){
   const b=new Blob([JSON.stringify(obj,null,1)],{type:"application/json"});
   const u=URL.createObjectURL(b);const l=document.createElement("a");l.href=u;l.download="content.json";l.click();setTimeout(()=>URL.revokeObjectURL(u),2000);
@@ -866,7 +882,7 @@ async function autoPublish(){
   if(publishing){queuePublish();return}
   if(!hasPublishToken()){
     if(pendingSaveMsg){toast(pendingSaveMsg);pendingSaveMsg=null}
-    if(!tokenHintShown){tokenHintShown=true;toast("Activează o dată publicarea automată din bara verde.")}
+    if(!tokenHintShown){tokenHintShown=true;toast("Salvat local. Publicarea pe site nu este încă configurată tehnic.")}
     if(ADMIN)renderAdmin();
     return;
   }
@@ -1295,12 +1311,7 @@ function closeAdmin(){$("#admin").classList.remove("on");document.body.style.ove
 function renderAdmin(){
   const unread=inbox().filter(m=>!m.read).length;$("#atabs").innerHTML=TABS.map(t=>`<button role="tab" data-act="tab" data-id="${t[0]}" aria-selected="${TAB===t[0]}">${t[1]}${t[0]==="mesaje"&&unread?" ("+unread+")":""}</button>`).join("");
   const B=$("#abody");
-  const tokOn=hasPublishToken();
-  const saveBar=tokOn
-    ?`<div class="asave"><p>${HAS_UNPUBLISHED||publishing?"Se salvează pe site…":"Gata. Când apeși Salvează la un produs sau text, apare automat pe www.urdapower.ro."}</p></div>`
-    :`<div class="asave"><p><b>O singură dată:</b> lipește tokenul GitHub ca modificările să apară automat pe site pentru clienți.</p>
-      <div class="cta" style="width:100%;margin-top:8px"><input class="inp" id="ghTok" type="password" autocomplete="off" placeholder="github_pat_… sau ghp_…" style="flex:1 1 220px;min-width:0"><button type="button" class="btn sm" data-act="activatepub">Activează</button></div>
-      <p class="hint" style="margin:8px 0 0">Token fine-grained, Contents: Write, pe horeattt/urdapower. După Activare nu mai e nevoie de Publică.</p></div>`;
+  const saveBar=`<div class="asave"><p>${HAS_UNPUBLISHED||publishing?"Se salvează pe site…":"Salvezi un produs sau o categorie → apare automat pe www.urdapower.ro."}</p></div>`;
   const stats=`<div class="stats"><div class="stat"><b>${S.products.length}</b><span>produse în catalog</span></div><div class="stat"><b>${S.products.filter(p=>p.exemplu).length}</b><span>exemple de completat</span></div><div class="stat"><b>${S.products.filter(p=>disc(p)>0).length}</b><span>produse la reducere</span></div><div class="stat"><b>${S.posts.filter(p=>p.activ!==false).length}</b><span>postări publicate</span></div></div>`;
   if(TAB==="produse"){
     B.innerHTML=stats+`<div class="ahead"><h3>Produse</h3><button class="btn sm" data-act="pnew">+ Adaugă produs</button></div>`+
@@ -1378,15 +1389,11 @@ function renderAdmin(){
       <button class="btn">Salvează conturile</button></form>`;
   }
   else if(TAB==="backup"){
-    const tok=getGhToken();
     B.innerHTML=`<div class="ahead"><h3>Cum funcționează</h3></div><div class="panel">
-      <p style="margin-top:0;font-weight:600;line-height:1.55">Adaugi, modifici sau ștergi un produs / o categorie → apeși <b>Salvează</b> → apare pe www.urdapower.ro. Fără export JSON, fără alți pași.</p>
-      ${tok?`<p class="note">Publicarea automată este activă.</p><div class="cta"><button type="button" class="btn ghost" data-act="cleartoken">Dezactivează</button></div>`
-        :`<p class="note">O singură dată: lipește tokenul mai jos (sau în bara verde) și apasă Activează.</p>
-      <div class="fld"><label for="ghTok">Token GitHub (Contents: Write pe horeattt/urdapower)</label><input class="inp" id="ghTok" type="password" autocomplete="off" value="" placeholder="github_pat_… sau ghp_…"></div>
-      <div class="cta"><button type="button" class="btn" data-act="activatepub">Activează</button></div>`}
+      <p style="margin-top:0;font-weight:600;line-height:1.55">Adaugi, modifici sau ștergi un produs / o categorie → apeși <b>Salvează</b> → apare pe www.urdapower.ro. Fără export, fără token, fără alți pași.</p>
+      <p class="note">${hasPublishToken()?"Publicarea automată este activă.":"Publicarea automată se configurează tehnic o singură dată în site."}</p>
       </div>
-      <details class="panel" style="margin-top:14px"><summary style="cursor:pointer;font-weight:800">Opțiuni avansate (doar dacă e nevoie)</summary>
+      <details class="panel" style="margin-top:14px"><summary style="cursor:pointer;font-weight:800">Opțiuni avansate</summary>
       <div class="cta" style="margin-top:12px"><button class="btn ghost" data-act="export">Descarcă copie .json</button><label class="btn ghost" style="cursor:pointer">Încarcă copie<input type="file" id="impF" accept="application/json,.json" hidden></label><button class="btn ghost" data-act="loaddraft">Draft local</button><button class="btn ghost" data-act="dlcontent">content.json</button><button class="btn danger" data-act="reset">Conținut inițial</button></div></details>`;
   }
   B.insertAdjacentHTML("afterbegin", saveBar);
@@ -1612,7 +1619,7 @@ $("#nav").addEventListener("click",()=>$("#nav").classList.remove("on"));
   }else{
     S=draft||normalizeSite(clone(DEFAULTS));
   }
-  renderSite();setAdmin(ADMIN);bootVisit();
+  renderSite();setAdmin(ADMIN);bootVisit();consumeSetupHash();
 })();
 </script>
 </body>
