@@ -61,8 +61,14 @@ header.top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);bac
 .hub-panel button:hover,.hub-panel button[aria-pressed=true]{border-color:var(--lime);background:#f4fbe8}
 .hub-panel .hub-all{grid-column:1/-1;background:var(--lime);border-color:var(--lime);font-family:var(--disp);text-transform:uppercase;letter-spacing:.03em}
 .asave{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#f4fbe8;border:1px solid #cfe8a0;border-radius:12px;padding:12px 14px;margin:0 0 16px}
+.asave.warn{background:#fff7e0;border-color:#e0a514}
+.asave.err{background:#fdeceb;border-color:#e07070}
+.asave.ok{background:#f4fbe8;border-color:#cfe8a0}
 .asave p{margin:0;flex:1 1 220px;font-size:14px;color:#243028;font-weight:600;line-height:1.35}
 .asave .cta{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.pubban{position:sticky;top:0;z-index:40;background:#7a1f1f;color:#fff;padding:10px 14px;font-size:14px;font-weight:700;text-align:center;display:none}
+.pubban.on{display:block}
+.pubban button{margin-left:10px;border:0;background:#fff;color:#7a1f1f;font-weight:800;border-radius:8px;padding:6px 10px;cursor:pointer}
 .pager{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:18px}
 .pager:empty{display:none}
 .pager button{min-width:44px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line2);background:#fff;font-weight:700;cursor:pointer;color:#152018}
@@ -733,8 +739,38 @@ const QUICK_ICONS=[
   '<path d="M14.700 6.300a4 4 0 0 0-5.400 5.400L3 18l3 3 6.300-6.300a4 4 0 0 0 5.400-5.400l-2.700 2.700-2.300-2.300z"/>'
 ];
 let HAS_UNPUBLISHED=false;
+let LAST_REMOTE=null;
+let LAST_PUBLISH_ERR="";
 let pendingImgs;
 let GALLERY={id:"",i:0};
+function contentFp(d){
+  try{
+    const x=pubSnapshot(d||{});
+    /* Pozele nu intră în comparație: pot fi doar locale sau comprimate la publicare */
+    (x.products||[]).forEach(p=>{delete p.img;delete p.imgs});
+    (x.posts||[]).forEach(p=>{delete p.img});
+    (x.blog||[]).forEach(p=>{delete p.img});
+    if(x.texts)delete x.texts.heroImg;
+    return JSON.stringify(x);
+  }catch(e){return ""}
+}
+function syncUnpublishedFlag(){
+  const draft=loadDraft();
+  if(!draft||!LAST_REMOTE){HAS_UNPUBLISHED=!!draft&&!LAST_REMOTE;return}
+  HAS_UNPUBLISHED=contentFp(draft)!==contentFp(LAST_REMOTE);
+}
+function updatePubBanner(){
+  let b=$("#pubban");
+  if(!b){
+    b=document.createElement("div");
+    b.id="pubban";b.className="pubban";b.setAttribute("role","status");
+    document.body.insertBefore(b,document.body.firstChild);
+  }
+  if(ADMIN&&HAS_UNPUBLISHED){
+    b.classList.add("on");
+    b.innerHTML=`Modificările tale sunt doar pe acest telefon — pe linkul public încă nu apar. <button type="button" data-act="forcepub">Publică acum pe site</button>`;
+  }else{b.classList.remove("on");b.innerHTML=""}
+}
 
 function normalizeSite(d){
   d.texts=Object.assign(clone(DEFAULTS.texts),d.texts||{});
@@ -867,7 +903,7 @@ function slimForPublish(obj){
   const x=clone(obj);
   let stripped=0;
   const slimImg=v=>{
-    if(typeof v==="string"&&v.indexOf("data:image")===0&&v.length>120000){stripped++;return ""}
+    if(typeof v==="string"&&v.indexOf("data:image")===0&&v.length>80000){stripped++;return ""}
     return v;
   };
   (x.products||[]).forEach(p=>{
@@ -943,37 +979,50 @@ async function publishToGitHub(contentStr){
 }
 function queuePublish(){
   clearTimeout(publishTimer);
-  publishTimer=setTimeout(()=>{autoPublish()},600);
+  publishTimer=setTimeout(()=>{autoPublish()},800);
 }
 async function autoPublish(){
   if(publishing){queuePublish();return}
   if(!hasPublishToken()){
-    if(pendingSaveMsg){toast(pendingSaveMsg);pendingSaveMsg=null}
-    if(!tokenHintShown){tokenHintShown=true;toast("Salvat local. Publicarea pe site nu este încă configurată tehnic.")}
+    LAST_PUBLISH_ERR="Publicarea nu e activă pe acest dispozitiv.";
+    if(pendingSaveMsg){toast(pendingSaveMsg+" — încă NU e pe linkul public");pendingSaveMsg=null}
+    if(!tokenHintShown){tokenHintShown=true;toast("Salvat doar pe telefon. Linkul public nu s-a actualizat.")}
+    updatePubBanner();
     if(ADMIN)renderAdmin();
     return;
   }
-  publishing=true;
+  const draft=loadDraft();
+  if(draft)S=draft;
+  publishing=true;LAST_PUBLISH_ERR="";
+  updatePubBanner();
   if(ADMIN)renderAdmin();
   const res=await publishToGitHub(JSON.stringify(pubSnapshot(S),null,1));
   publishing=false;
   if(res.ok){
-    HAS_UNPUBLISHED=false;
-    toast((pendingSaveMsg||"Salvat")+" pe site"+(res.stripped?" · pozele foarte mari rămân doar local":""));
+    HAS_UNPUBLISHED=false;LAST_PUBLISH_ERR="";
+    try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+    LAST_REMOTE=normalizeSite(clone(S));
+    toast((pendingSaveMsg||"Salvat")+" pe site — apare și pe linkul public"+(res.stripped?" · pozele foarte mari rămân doar local":""));
     pendingSaveMsg=null;
+    updatePubBanner();
     if(ADMIN)renderAdmin();
     return;
   }
-  if(pendingSaveMsg){toast(pendingSaveMsg);pendingSaveMsg=null}
-  if(res.needToken){toast("Lipește tokenul o dată în bara verde, apoi salvezi din nou.");if(ADMIN)renderAdmin();return}
-  toast(res.err||"Nu s-a putut publica pe site");
+  LAST_PUBLISH_ERR=res.err||"Nu s-a putut publica pe site";
+  HAS_UNPUBLISHED=true;
+  if(pendingSaveMsg){toast(pendingSaveMsg+" — încă NU e pe linkul public");pendingSaveMsg=null}
+  if(res.needToken){toast("Lipește tokenul o dată, apoi salvează din nou.");updatePubBanner();if(ADMIN)renderAdmin();return}
+  toast(LAST_PUBLISH_ERR);
+  updatePubBanner();
   if(ADMIN)renderAdmin();
+  setTimeout(()=>{if(HAS_UNPUBLISHED&&hasPublishToken())queuePublish()},2500);
 }
 function save(msg){
   try{
     localStorage.setItem(KEY,JSON.stringify(S));
-    HAS_UNPUBLISHED=true;
+    HAS_UNPUBLISHED=true;LAST_PUBLISH_ERR="";
     pendingSaveMsg=(msg===false?pendingSaveMsg:(msg||"Salvat"));
+    updatePubBanner();
     queuePublish();
     return true;
   }catch(e){toast("Nu s-a putut salva. Folosește poze mai mici.");return false}
@@ -982,17 +1031,10 @@ async function publishSite(){
   if(!hasPublishToken()){
     const v=($("#ghTok")&&$("#ghTok").value||"").trim();
     if(v){setGhToken(v);toast("Token salvat — public…")}
-    else{toast("Lipește tokenul în câmpul din bara verde, o singură dată.");return}
+    else{toast("Publicarea nu e activă pe acest dispozitiv.");return}
   }
-  publishing=true;
-  toast("Se publică…");
-  const res=await publishToGitHub(JSON.stringify(pubSnapshot(S),null,1));
-  publishing=false;
-  if(!res.ok){toast(res.err||"Publicarea a eșuat");return}
-  HAS_UNPUBLISHED=false;
-  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
-  toast("Salvat pe site");
-  if(ADMIN)renderAdmin();
+  pendingSaveMsg="Publicare manuală";
+  await autoPublish();
 }
 function activateAutoPublish(){
   const v=($("#ghTok")&&$("#ghTok").value||"").trim();
@@ -1026,7 +1068,7 @@ function renderImgsPick(){
 function compressImageFile(file){
   return new Promise((resolve,reject)=>{
     const fr=new FileReader();
-    fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.74))};im.onerror=()=>reject(new Error("img"));im.src=fr.result};
+    fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,720/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*k)||1;c.height=Math.round(im.height*k)||1;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);let q=.68,out=c.toDataURL("image/jpeg",q);while(out.length>90000&&q>.45){q-=.08;out=c.toDataURL("image/jpeg",q)}resolve(out)};im.onerror=()=>reject(new Error("img"));im.src=fr.result};
     fr.onerror=()=>reject(new Error("file"));
     fr.readAsDataURL(file);
   });
@@ -1371,14 +1413,41 @@ function loginDlg(){
   <div class="err" id="lerr"></div><button class="btn" style="width:100%">Intră în cont</button></form>`,true);
   setTimeout(()=>$("#lu")&&$("#lu").focus(),50);
 }
-function setAdmin(v){ADMIN=v;try{v?sessionStorage.setItem("urda_admin","1"):sessionStorage.removeItem("urda_admin")}catch(e){}$("#adminPill").classList.toggle("on",v);$("#adminLink").lastChild.textContent=v?" Panou administrare":" Administrare"}
-function openAdmin(){$("#admin").classList.add("on");document.body.style.overflow="hidden";renderAdmin()}
-function closeAdmin(){$("#admin").classList.remove("on");document.body.style.overflow="";renderSite()}
+function setAdmin(v){ADMIN=v;try{v?sessionStorage.setItem("urda_admin","1"):sessionStorage.removeItem("urda_admin")}catch(e){}$("#adminPill").classList.toggle("on",v);$("#adminLink").lastChild.textContent=v?" Panou administrare":" Administrare";updatePubBanner()}
+function openAdmin(){
+  const draft=loadDraft();
+  if(draft){
+    S=draft;
+    syncUnpublishedFlag();
+    if(HAS_UNPUBLISHED&&hasPublishToken())queuePublish();
+  }
+  $("#admin").classList.add("on");document.body.style.overflow="hidden";
+  updatePubBanner();renderAdmin();
+}
+async function closeAdmin(){
+  $("#admin").classList.remove("on");document.body.style.overflow="";
+  if(HAS_UNPUBLISHED)toast("Pe linkul public apar doar modificările deja publicate. Dacă tocmai ai salvat, așteaptă „Publicat pe site”.");
+  const remote=await fetchRemoteContent();
+  if(remote){LAST_REMOTE=remote;S=remote}
+  else{
+    const draft=loadDraft();
+    if(!HAS_UNPUBLISHED&&draft)S=draft;
+  }
+  updatePubBanner();renderSite();
+}
 
 function renderAdmin(){
   const unread=inbox().filter(m=>!m.read).length;$("#atabs").innerHTML=TABS.map(t=>`<button role="tab" data-act="tab" data-id="${t[0]}" aria-selected="${TAB===t[0]}">${t[1]}${t[0]==="mesaje"&&unread?" ("+unread+")":""}</button>`).join("");
   const B=$("#abody");
-  const saveBar=`<div class="asave"><p>${HAS_UNPUBLISHED||publishing?"Se salvează pe site…":"Salvezi un produs sau o categorie → apare automat pe www.urdapower.ro."}</p></div>`;
+  let saveCls="ok",saveTxt="Totul e publicat pe www.urdapower.ro — inclusiv pe linkul partajat.";
+  let saveExtra="";
+  if(publishing){saveCls="warn";saveTxt="Se publică acum pe site… așteaptă confirmarea."}
+  else if(HAS_UNPUBLISHED){
+    saveCls=LAST_PUBLISH_ERR?"err":"warn";
+    saveTxt=LAST_PUBLISH_ERR?("Nu e încă pe linkul public: "+LAST_PUBLISH_ERR):"Salvat pe telefon, dar încă NU pe linkul public. Public…";
+    saveExtra=`<div class="cta"><button type="button" class="btn sm" data-act="forcepub">Publică acum</button></div>`;
+  }
+  const saveBar=`<div class="asave ${saveCls}"><p>${saveTxt}</p>${saveExtra}</div>`;
   const stats=`<div class="stats"><div class="stat"><b>${S.products.length}</b><span>produse în catalog</span></div><div class="stat"><b>${S.products.filter(p=>p.exemplu).length}</b><span>exemple de completat</span></div><div class="stat"><b>${S.products.filter(p=>disc(p)>0).length}</b><span>produse la reducere</span></div><div class="stat"><b>${S.posts.filter(p=>p.activ!==false).length}</b><span>postări publicate</span></div></div>`;
   if(TAB==="produse"){
     B.innerHTML=stats+`<div class="ahead"><h3>Produse</h3><button class="btn sm" data-act="pnew">+ Adaugă produs</button></div>`+
@@ -1457,8 +1526,8 @@ function renderAdmin(){
   }
   else if(TAB==="backup"){
     B.innerHTML=`<div class="ahead"><h3>Cum funcționează</h3></div><div class="panel">
-      <p style="margin-top:0;font-weight:600;line-height:1.55">Adaugi, modifici sau ștergi un produs / o categorie → apeși <b>Salvează</b> → apare pe www.urdapower.ro. Fără export, fără token, fără alți pași.</p>
-      <p class="note">${hasPublishToken()?"Publicarea automată este activă.":"Publicarea automată se configurează tehnic o singură dată în site."}</p>
+      <p style="margin-top:0;font-weight:600;line-height:1.55">Adaugi, modifici sau ștergi → apeși <b>Salvează</b> → aștepți mesajul <b>„pe site — apare și pe linkul public”</b>. Abia atunci se văd modificările pe linkul partajat.</p>
+      <p class="note">${hasPublishToken()?"Publicarea automată este activă pe acest dispozitiv.":"Publicarea automată trebuie activată o singură dată pe telefonul/PC-ul de administrare."}</p>
       </div>
       <details class="panel" style="margin-top:14px"><summary style="cursor:pointer;font-weight:800">Opțiuni avansate</summary>
       <div class="cta" style="margin-top:12px"><button class="btn ghost" data-act="export">Descarcă copie .json</button><label class="btn ghost" style="cursor:pointer">Încarcă copie<input type="file" id="impF" accept="application/json,.json" hidden></label><button class="btn ghost" data-act="loaddraft">Draft local</button><button class="btn ghost" data-act="dlcontent">content.json</button><button class="btn danger" data-act="reset">Conținut inițial</button></div></details>`;
@@ -1564,6 +1633,7 @@ document.addEventListener("click",e=>{
   else if(a==="login")loginDlg();
   else if(a==="openadmin")openAdmin();
   else if(a==="closeadmin")closeAdmin();
+  else if(a==="forcepub"){pendingSaveMsg="Publicare";publishSite()}
   else if(a==="logout"){setAdmin(false);closeAdmin();toast("Te-ai deconectat")}
   else if(a==="tab"){TAB=id;renderAdmin()}
   else if(a==="pnew")prodForm();
@@ -1676,17 +1746,16 @@ $("#nav").addEventListener("click",()=>$("#nav").classList.remove("on"));
 (async function boot(){
   const remote=await fetchRemoteContent();
   const draft=loadDraft();
-  if(remote){
-    S=remote;
-    if(draft){
-      try{HAS_UNPUBLISHED=JSON.stringify(pubSnapshot(draft))!==JSON.stringify(pubSnapshot(remote))}catch(e){HAS_UNPUBLISHED=false}
-      /* Admin pe acest dispozitiv: continuă pe draftul local; vizitatorii văd content.json public */
-      if(ADMIN&&HAS_UNPUBLISHED)S=draft;
-    }
-  }else{
-    S=draft||normalizeSite(clone(DEFAULTS));
-  }
+  LAST_REMOTE=remote;
+  /* Site-ul public și linkurile partajate arată DOAR content.json de pe GitHub */
+  if(remote)S=remote;
+  else S=normalizeSite(clone(DEFAULTS));
+  if(draft&&remote)syncUnpublishedFlag();
+  else if(draft&&!remote){S=draft;HAS_UNPUBLISHED=true}
   renderSite();setAdmin(ADMIN);bootVisit();consumeSetupHash();
+  updatePubBanner();
+  /* Dacă adminul are modificări doar locale, le publică automat ca să apară pe linkul public */
+  if(ADMIN&&HAS_UNPUBLISHED&&hasPublishToken())queuePublish();
 })();
 </script>
 </body>
