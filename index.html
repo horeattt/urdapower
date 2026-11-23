@@ -731,6 +731,8 @@ const numOrNull=v=>{v=String(v??"").trim().replace(",",".");if(v==="")return nul
 const GH_TOKEN_KEY="urda_gh_token";
 /* Token limitat Contents:Write doar pe horeattt/urdapower — folosit intern de Salvează */
 const BUILTIN_PUBLISH_TOKEN="";
+/* AES-GCM bundle; se deblochează automat la login admin pe orice dispozitiv */
+const PUB_BUNDLE="AxOmt5PwlQXqZSImulPmJ4tuHBpHpYX27ON4PKirAA42obPoID18BoIOUhCA/2v0YcHw3JsM2ixtFdi4EnKrrihaJhi4hr1nToW/V3hKLilLJh1M";
 const STOC_MAP={in_stoc:["IN STOC","ok"],la_furnizor:["IN STOC LA FURNIZOR","furn"],lipsa:["LIPSA STOC","lipsa"]};
 const QUICK_ICONS=[
   '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',
@@ -766,7 +768,10 @@ function updatePubBanner(){
     b.id="pubban";b.className="pubban";b.setAttribute("role","status");
     document.body.insertBefore(b,document.body.firstChild);
   }
-  if(ADMIN&&HAS_UNPUBLISHED){
+  if(ADMIN&&!hasPublishToken()){
+    b.classList.add("on");
+    b.innerHTML=`Publicarea nu e activă pe acest telefon — modificările nu apar pe linkul public. Intră în Administrare și activează publicarea.`;
+  }else if(ADMIN&&HAS_UNPUBLISHED){
     b.classList.add("on");
     b.innerHTML=`Modificările tale sunt doar pe acest telefon — pe linkul public încă nu apar. <button type="button" data-act="forcepub">Publică acum pe site</button>`;
   }else{b.classList.remove("on");b.innerHTML=""}
@@ -873,6 +878,26 @@ let publishTimer=null, publishing=false, tokenHintShown=false, pendingSaveMsg=nu
 function getGhToken(){try{const local=(localStorage.getItem(GH_TOKEN_KEY)||"").trim();if(local)return local}catch(e){}return (BUILTIN_PUBLISH_TOKEN||"").trim()}
 function setGhToken(v){try{v?localStorage.setItem(GH_TOKEN_KEY,v.trim()):localStorage.removeItem(GH_TOKEN_KEY)}catch(e){}}
 function hasPublishToken(){return !!getGhToken().trim()}
+function b64ToBytes(b64){const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u}
+async function unlockPublishFromLogin(user,pass){
+  try{
+    const raw=b64ToBytes(PUB_BUNDLE);
+    const salt=raw.slice(0,16),iv=raw.slice(16,28),data=raw.slice(28);
+    const enc=new TextEncoder();
+    const base=await crypto.subtle.importKey("raw",enc.encode(String(user).toLowerCase()+":"+String(pass)),"PBKDF2",false,["deriveKey"]);
+    const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:120000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["decrypt"]);
+    const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv},key,data);
+    const token=new TextDecoder().decode(pt).trim();
+    if(!token)return false;
+    setGhToken(token);
+    return true;
+  }catch(e){return false}
+}
+async function ensurePublishReady(user,pass){
+  if(hasPublishToken())return true;
+  if(user&&pass)return await unlockPublishFromLogin(user,pass);
+  return false;
+}
 function consumeSetupHash(){
   try{
     const h=String(location.hash||"");
@@ -1415,11 +1440,17 @@ function loginDlg(){
 }
 function setAdmin(v){ADMIN=v;try{v?sessionStorage.setItem("urda_admin","1"):sessionStorage.removeItem("urda_admin")}catch(e){}$("#adminPill").classList.toggle("on",v);$("#adminLink").lastChild.textContent=v?" Panou administrare":" Administrare";updatePubBanner()}
 function openAdmin(){
+  if(!hasPublishToken()){
+    setAdmin(false);
+    loginDlg();
+    toast("Autentifică-te ca să activezi publicarea pe acest dispozitiv");
+    return;
+  }
   const draft=loadDraft();
   if(draft){
     S=draft;
     syncUnpublishedFlag();
-    if(HAS_UNPUBLISHED&&hasPublishToken())queuePublish();
+    if(HAS_UNPUBLISHED)queuePublish();
   }
   $("#admin").classList.add("on");document.body.style.overflow="hidden";
   updatePubBanner();renderAdmin();
@@ -1441,7 +1472,11 @@ function renderAdmin(){
   const B=$("#abody");
   let saveCls="ok",saveTxt="Totul e publicat pe www.urdapower.ro — inclusiv pe linkul partajat.";
   let saveExtra="";
-  if(publishing){saveCls="warn";saveTxt="Se publică acum pe site… așteaptă confirmarea."}
+  if(!hasPublishToken()){
+    saveCls="err";
+    saveTxt="Publicarea nu e activă. Ieși și intră iar în Administrare (login) — se activează automat pe acest dispozitiv.";
+    saveExtra=`<div class="cta"><button type="button" class="btn sm" data-act="login">Autentifică-te din nou</button></div>`;
+  }else if(publishing){saveCls="warn";saveTxt="Se publică acum pe site… așteaptă confirmarea."}
   else if(HAS_UNPUBLISHED){
     saveCls=LAST_PUBLISH_ERR?"err":"warn";
     saveTxt=LAST_PUBLISH_ERR?("Nu e încă pe linkul public: "+LAST_PUBLISH_ERR):"Salvat pe telefon, dar încă NU pe linkul public. Public…";
@@ -1527,7 +1562,7 @@ function renderAdmin(){
   else if(TAB==="backup"){
     B.innerHTML=`<div class="ahead"><h3>Cum funcționează</h3></div><div class="panel">
       <p style="margin-top:0;font-weight:600;line-height:1.55">Adaugi, modifici sau ștergi → apeși <b>Salvează</b> → aștepți mesajul <b>„pe site — apare și pe linkul public”</b>. Abia atunci se văd modificările pe linkul partajat.</p>
-      <p class="note">${hasPublishToken()?"Publicarea automată este activă pe acest dispozitiv.":"Publicarea automată trebuie activată o singură dată pe telefonul/PC-ul de administrare."}</p>
+      <p class="note">${hasPublishToken()?"Publicarea automată este activă pe acest dispozitiv.":"Intră în Administrare cu user/parolă — publicarea se activează automat."}</p>
       </div>
       <details class="panel" style="margin-top:14px"><summary style="cursor:pointer;font-weight:800">Opțiuni avansate</summary>
       <div class="cta" style="margin-top:12px"><button class="btn ghost" data-act="export">Descarcă copie .json</button><label class="btn ghost" style="cursor:pointer">Încarcă copie<input type="file" id="impF" accept="application/json,.json" hidden></label><button class="btn ghost" data-act="loaddraft">Draft local</button><button class="btn ghost" data-act="dlcontent">content.json</button><button class="btn danger" data-act="reset">Conținut inițial</button></div></details>`;
@@ -1692,7 +1727,18 @@ document.addEventListener("input",e=>{
 });
 document.addEventListener("submit",e=>{
   e.preventDefault();const f=e.target;const d=Object.fromEntries(new FormData(f));
-  if(f.id==="loginF"){if($("#lu").value.trim().toLowerCase()==="sebi"&&$("#lp").value==="1977"){setAdmin(true);closeModal();openAdmin();toast("Bine ai venit!")}else $("#lerr").textContent="Utilizator sau parolă greșită."}
+  if(f.id==="loginF"){
+    const u=$("#lu").value.trim().toLowerCase(),p=$("#lp").value;
+    if(u==="sebi"&&p==="1977"){
+      (async()=>{
+        const ok=await ensurePublishReady(u,p);
+        if(!ok){$("#lerr").textContent="Autentificare ok, dar publicarea nu s-a putut activa. Reîncearcă.";return}
+        setAdmin(true);closeModal();openAdmin();
+        toast("Bine ai venit — publicare activă pe acest dispozitiv");
+        if(HAS_UNPUBLISHED)queuePublish();
+      })();
+    }else $("#lerr").textContent="Utilizator sau parolă greșită."
+  }
   else if(f.id==="prodF"){
     const pret=numOrNull(d.pret),pv=numOrNull(d.pretVechi);
     if(pv!==null&&pret!==null&&pv<=pret){$("#perr").textContent="Prețul vechi trebuie să fie mai mare decât prețul actual.";return}
