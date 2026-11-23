@@ -258,8 +258,14 @@ footer a:hover{color:var(--accent)}
 .modal.on{display:flex}
 .dlg{background:var(--bg2);border:1px solid var(--line2);border-radius:16px;width:min(920px,100%);position:relative;padding:20px 16px 22px;max-height:min(92dvh,100%);overflow:auto}
 .dlg.narrow{width:min(420px,100%)}
-.dlg .x{position:absolute;right:10px;top:10px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);background:#fff;color:#152018;cursor:pointer;font-size:22px;z-index:2}
-.dlg h2{font-size:clamp(28px,7vw,36px);font-weight:900;font-style:italic;margin-bottom:6px;padding-right:48px}
+.dlg .x,.dlg .share{position:absolute;top:10px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line2);background:#fff;color:#152018;cursor:pointer;z-index:2;display:grid;place-items:center;padding:0}
+.dlg .x{right:10px;font-size:22px;line-height:1}
+.dlg .share{right:60px}
+.dlg .share svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dlg .share:hover,.dlg .x:hover{background:#f4f7f2}
+.dlg h2{font-size:clamp(28px,7vw,36px);font-weight:900;font-style:italic;margin-bottom:6px;padding-right:108px}
+.shareSheet{display:grid;gap:10px;margin-top:8px}
+.shareSheet a,.shareSheet button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px}
 .pd{display:grid;grid-template-columns:1fr;gap:16px}
 .pd .pimg{border-radius:12px;overflow:hidden;background:#f3f6f1;position:relative;aspect-ratio:4/3}
 .pd .pimg img{width:100%;height:100%;object-fit:cover}
@@ -1230,13 +1236,73 @@ function renderGrid(){
 }
 const orderTxt=p=>`Bună ziua! Sunt interesat(ă) de ${p.nume}${p.pret?" ("+lei(p.pret)+")":""}. Este disponibil?`;
 
+function prodShareUrl(p){
+  const u=new URL(location.href);
+  u.searchParams.set("p",p.id);
+  u.hash="";
+  return u.toString();
+}
+function prodShareText(p){
+  const bits=[p.nume,p.desc||"",p.pret?("Preț: "+lei(p.pret)):"Preț la cerere","Categorie: "+catName(p.cat),"URDA Power Center — Lipova"].filter(Boolean);
+  return bits.join("\n");
+}
+async function imageFileForShare(src,name){
+  if(!src)return null;
+  try{
+    const r=await fetch(src);
+    const blob=await r.blob();
+    if(!blob||!blob.size)return null;
+    const type=(blob.type&&blob.type.indexOf("image/")===0)?blob.type:"image/jpeg";
+    const ext=type.indexOf("png")>=0?"png":(type.indexOf("webp")>=0?"webp":"jpg");
+    return new File([blob],(name||"produs")+"."+ext,{type});
+  }catch(e){return null}
+}
+function showShareFallback(p,url,text){
+  const wa="https://wa.me/?text="+encodeURIComponent(text+"\n"+url);
+  const fb="https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(url);
+  openModal(`<button class="x" data-act="close" aria-label="Închide">×</button>
+    <h2>Distribuie</h2>
+    <p class="mut" style="margin:0 0 12px">${esc(p.nume)}</p>
+    <div class="shareSheet">
+      <a class="btn wa" target="_blank" rel="noopener" href="${esc(wa)}">WhatsApp</a>
+      <a class="btn ghost" target="_blank" rel="noopener" href="${esc(fb)}">Facebook</a>
+      <button type="button" class="btn ghost" data-act="copylink" data-url="${esc(url)}">Copiază linkul</button>
+    </div>`);
+}
+async function shareProd(id){
+  const p=S.products.find(x=>x.id===id);if(!p)return;
+  const url=prodShareUrl(p), text=prodShareText(p), title=p.nume+" — URDA Power Center";
+  track("share",{id:p.id,name:p.nume});
+  try{
+    if(navigator.share){
+      const base={title,text,url};
+      const src=imgSrc(coverOf(p));
+      if(src){
+        const file=await imageFileForShare(src,String(p.nume||"produs").replace(/[^\w\-]+/g,"_").slice(0,40)||"produs");
+        if(file){
+          const withFile={title,text,url,files:[file]};
+          if(!navigator.canShare||navigator.canShare(withFile)){
+            await navigator.share(withFile);
+            return;
+          }
+        }
+      }
+      await navigator.share(base);
+      return;
+    }
+  }catch(e){if(e&&e.name==="AbortError")return}
+  showShareFallback(p,url,text);
+}
 function openProd(id){
   const p=S.products.find(x=>x.id===id);if(!p)return;
   track("view",{id:p.id,name:p.nume});
+  try{history.replaceState(null,"",prodShareUrl(p))}catch(e){}
   const dot=(p.dotari||"").split("\n").map(s=>s.trim()).filter(Boolean);
   const rows=[["Categorie",catName(p.cat)],["Putere motor",p.putere?num(p.putere)+" W":""],["Autonomie",p.autonomie?"până la "+p.autonomie+" km":""],["Viteză maximă",p.viteza?p.viteza+" km/h":""],["Permis de conducere",p.faraPermis?"Nu este necesar":""]].filter(r=>r[1]);
   const st=(STOC_MAP[p.stoc]||STOC_MAP.in_stoc)[0];
-  openModal(`<button class="x" data-act="close" aria-label="Închide">×</button>
+  const shareIco=`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.9M15.4 6.6l-6.8 3.9"/></svg>`;
+  openModal(`<button class="share" data-act="shareprod" data-id="${esc(p.id)}" aria-label="Distribuie produsul">${shareIco}</button>
+  <button class="x" data-act="close" aria-label="Închide">×</button>
   <div class="pd">${galleryHtml(p)}
    <div><span class="cb"><span class="cat">${esc(catName(p.cat))}</span></span><h2>${esc(p.nume)}</h2>
    <p style="margin:0 0 8px">${stocBdg(p)}</p>
@@ -1244,7 +1310,7 @@ function openProd(id){
    <p style="color:#3d4a42">${esc(p.desc)}</p>
    <table class="spt">${rows.map(r=>`<tr><td>${r[0]}</td><td>${esc(r[1])}</td></tr>`).join("")}<tr><td>Stoc</td><td>${esc(st)}</td></tr></table>
    ${dot.length?`<ul class="dot">${dot.map(d=>`<li>${esc(d)}</li>`).join("")}</ul>`:""}
-   <div class="cta" style="margin-top:16px"><a class="btn wa" target="_blank" rel="noopener" href="${esc(waLink(orderTxt(p)))}">Comandă pe WhatsApp</a><a class="btn ghost" href="${telLink()}">Sună: ${esc(S.texts.telefon)}</a>${p.pret?`<button class="btn ghost" data-act="calcprod" data-id="${esc(p.id)}">Calculează rata</button>`:""}</div>
+   <div class="cta" style="margin-top:16px"><a class="btn wa" target="_blank" rel="noopener" href="${esc(waLink(orderTxt(p)))}">Comandă pe WhatsApp</a><a class="btn ghost" href="${telLink()}">Sună: ${esc(S.texts.telefon)}</a>${p.pret?`<button class="btn ghost" data-act="calcprod" data-id="${esc(p.id)}">Calculează rata</button>`:""}<button type="button" class="btn ghost" data-act="shareprod" data-id="${esc(p.id)}">Distribuie</button></div>
    </div></div>`);
 }
 function renderCmpBar(){
@@ -1660,6 +1726,13 @@ document.addEventListener("click",e=>{
   else if(a==="page"){PAGE=+id||1;renderGrid();$("#produse").scrollIntoView()}
   else if(a==="resetf"){HUB=null;F={q:"",cat:"toate",permis:false,promo:false,max:null,sort:"rec"};PAGE=1;$("#fq").value="";$("#fpermis").checked=$("#fpromo").checked=false;$("#fsort").value="rec";const hp=$("#hubPanel");if(hp){hp.classList.remove("on");hp.hidden=true;hp.innerHTML=""}document.querySelectorAll("#hubs [data-act=hub]").forEach(b=>b.setAttribute("aria-pressed","false"));renderCats();renderGrid()}
   else if(a==="prod")openProd(id);
+  else if(a==="shareprod"){e.preventDefault();shareProd(id)}
+  else if(a==="copylink"){
+    const url=el.dataset.url||location.href;
+    (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast("Link copiat")).catch(()=>{
+      try{const i=document.createElement("input");i.value=url;document.body.appendChild(i);i.select();document.execCommand("copy");i.remove();toast("Link copiat")}catch(err){toast("Nu am putut copia linkul")}
+    });
+  }
   else if(a==="close")closeModal();
   else if(a==="showcmp")showCmp();
   else if(a==="clearcmp"){CMP=[];renderCmpBar();renderGrid()}
@@ -1800,6 +1873,10 @@ $("#nav").addEventListener("click",()=>$("#nav").classList.remove("on"));
   else if(draft&&!remote){S=draft;HAS_UNPUBLISHED=true}
   renderSite();setAdmin(ADMIN);bootVisit();consumeSetupHash();
   updatePubBanner();
+  try{
+    const pid=(new URLSearchParams(location.search).get("p")||"").trim();
+    if(pid&&S.products.some(x=>x.id===pid&&x.activ!==false))setTimeout(()=>openProd(pid),120);
+  }catch(e){}
   /* Dacă adminul are modificări doar locale, le publică automat ca să apară pe linkul public */
   if(ADMIN&&HAS_UNPUBLISHED&&hasPublishToken())queuePublish();
 })();
