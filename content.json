@@ -25,7 +25,8 @@
   "quick2": "Plata în rate, inclusiv fără avans",
   "quick3": "Livrare în județul Arad și împrejurimi",
   "quick4": "Service, piese și garanție extinsă",
-  "_ping": "ok"
+  "_ping": "ok",
+  "_e2e": "e2e_1795411795645"
  },
  "cats": [
   {
@@ -435,6 +436,28 @@
    "dotari": "15 bar sdgsdghhggf",
    "imgs": [
     "asset:e7"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e10",
+   "nume": "Plită cu inducție",
+   "cat": "plite",
+   "pret": 899,
+   "pretVechi": 1149,
+   "spec": "4 zone",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e10",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "4 zone",
+   "imgs": [
+    "asset:e10"
    ],
    "stoc": "in_stoc"
   }
