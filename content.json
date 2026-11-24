@@ -159,9 +159,9 @@
    "activ": true,
    "exemplu": false,
    "imgs": [
-    "media/pmws8mpyriyw-0-93ea3c6be4.jpg"
+    "media/pmws8mpyriyw-0-93ea3c6be4-fix.jpg"
    ],
-   "img": "media/pmws8mpyriyw-0-93ea3c6be4.jpg",
+   "img": "media/pmws8mpyriyw-0-93ea3c6be4-fix.jpg",
    "stoc": "in_stoc"
   },
   {
@@ -179,9 +179,9 @@
    "activ": true,
    "exemplu": false,
    "imgs": [
-    "media/pmws98uzvl0b-0-7e919ee548.jpg"
+    "media/pmws98uzvl0b-0-7e919ee548-fix.jpg"
    ],
-   "img": "media/pmws98uzvl0b-0-7e919ee548.jpg",
+   "img": "media/pmws98uzvl0b-0-7e919ee548-fix.jpg",
    "stoc": "in_stoc"
   },
   {
@@ -196,12 +196,12 @@
    "faraPermis": true,
    "activ": true,
    "exemplu": false,
-   "img": "media/p1-0-844d3a025b.jpg",
+   "img": "media/p1-0-844d3a025b-fix.jpg",
    "desc": "Scuter electric cu design modern și confort sporit, potrivit pentru drumurile de zi cu zi.",
    "dotari": "Motor electric de 2000 W\nAutonomie de până la 60 km\nViteză maximă 25 km/h\nSe conduce fără permis\nDesign modern și confort sporit",
    "imgs": [
-    "media/p1-0-844d3a025b.jpg",
-    "media/p1-1-71b61b2f19.jpg"
+    "media/p1-0-844d3a025b-fix.jpg",
+    "media/p1-1-71b61b2f19-fix.jpg"
    ],
    "stoc": "in_stoc"
   },
@@ -237,12 +237,12 @@
    "faraPermis": true,
    "activ": true,
    "exemplu": false,
-   "img": "media/p3-0-4afd67f9d4.jpg",
+   "img": "media/p3-0-4afd67f9d4-fix.jpg",
    "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
    "dotari": "",
    "imgs": [
-    "media/p3-0-4afd67f9d4.jpg",
-    "media/p3-1-0ad5077c5f.jpg"
+    "media/p3-0-4afd67f9d4-fix.jpg",
+    "media/p3-1-0ad5077c5f-fix.jpg"
    ],
    "stoc": "in_stoc"
   },
@@ -542,7 +542,7 @@
    "data": "2026-11-22",
    "text": "etyjetyjkrtyryukry",
    "activ": true,
-   "img": "media/blog-bmws6ujhrpv5-c5e54d8782.jpg"
+   "img": "media/blog-bmws6ujhrpv5-c5e54d8782-fix.jpg"
   },
   {
    "id": "b1",
