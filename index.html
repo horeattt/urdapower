@@ -751,14 +751,21 @@ let LAST_REMOTE=null;
 let LAST_PUBLISH_ERR="";
 let pendingImgs;
 let GALLERY={id:"",i:0};
+function imgSig(v){
+  if(!v||typeof v!=="string")return "";
+  if(v.indexOf("data:image")===0)return "d:"+v.length+":"+v.slice(22,86)+":"+v.slice(-40);
+  return v;
+}
 function contentFp(d){
   try{
     const x=pubSnapshot(d||{});
-    /* Pozele nu intră în comparație: pot fi doar locale sau comprimate la publicare */
-    (x.products||[]).forEach(p=>{delete p.img;delete p.imgs});
-    (x.posts||[]).forEach(p=>{delete p.img});
-    (x.blog||[]).forEach(p=>{delete p.img});
-    if(x.texts)delete x.texts.heroImg;
+    (x.products||[]).forEach(p=>{
+      p.img=imgSig(p.img||"");
+      p.imgs=(Array.isArray(p.imgs)?p.imgs:[]).map(imgSig);
+    });
+    (x.posts||[]).forEach(p=>{p.img=imgSig(p.img||"")});
+    (x.blog||[]).forEach(p=>{p.img=imgSig(p.img||"")});
+    if(x.texts)x.texts.heroImg=imgSig(x.texts.heroImg||"");
     return JSON.stringify(x);
   }catch(e){return ""}
 }
@@ -930,55 +937,42 @@ function utf8ToBase64(str){
   }
   return btoa(bin);
 }
-function slimForPublish(obj){
-  const x=clone(obj);
-  let stripped=0;
-  const slimImg=v=>{
-    if(typeof v==="string"&&v.indexOf("data:image")===0&&v.length>80000){stripped++;return ""}
-    return v;
-  };
-  (x.products||[]).forEach(p=>{
-    if(p.img)p.img=slimImg(p.img);
-    if(Array.isArray(p.imgs))p.imgs=p.imgs.map(slimImg).filter(Boolean).slice(0,3);
-    p.img=p.img||(p.imgs&&p.imgs[0])||"";
-  });
-  (x.posts||[]).forEach(p=>{if(p.img)p.img=slimImg(p.img)});
-  (x.blog||[]).forEach(p=>{if(p.img)p.img=slimImg(p.img)});
-  if(x.texts&&x.texts.heroImg)x.texts.heroImg=slimImg(x.texts.heroImg);
-  return {payload:x,stripped};
+function dataUrlExt(dataUrl){
+  const m=/^data:image\/(jpeg|jpg|png|webp);base64,/i.exec(dataUrl||"");
+  if(!m)return null;
+  const t=m[1].toLowerCase();
+  return (t==="jpeg"||t==="jpg")?"jpg":t;
 }
-async function publishToGitHub(contentStr){
-  const token=getGhToken().trim();
-  if(!token)return {ok:false,needToken:true};
-  const api="https://api.github.com/repos/horeattt/urdapower/contents/content.json";
-  const headers={Accept:"application/vnd.github+json","Content-Type":"application/json",Authorization:"Bearer "+token,"X-GitHub-Api-Version":"2022-11-28"};
-  let publishStr=contentStr;
-  let stripped=0;
+function dataUrlBytes(dataUrl){
+  const i=(dataUrl||"").indexOf(",");
+  if(i<0)return null;
   try{
-    const parsed=JSON.parse(contentStr);
-    const slim=slimForPublish(parsed);
-    publishStr=JSON.stringify(slim.payload,null,1);
-    stripped=slim.stripped;
-  }catch(e){}
-  let contentB64;
-  try{contentB64=utf8ToBase64(publishStr)}
-  catch(e){return {ok:false,err:"Conținutul e prea mare pentru publicare. Folosește poze mai mici."}}
-  if(contentB64.length>900000){
-    try{
-      const parsed=JSON.parse(publishStr);
-      (parsed.products||[]).forEach(p=>{if(typeof p.img==="string"&&p.img.indexOf("data:image")===0){p.img="";stripped++}if(Array.isArray(p.imgs))p.imgs=[]});
-      (parsed.posts||[]).forEach(p=>{if(typeof p.img==="string"&&p.img.indexOf("data:image")===0){p.img="";stripped++}});
-      publishStr=JSON.stringify(parsed,null,1);
-      contentB64=utf8ToBase64(publishStr);
-    }catch(e){}
+    const bin=atob(dataUrl.slice(i+1));
+    const u=new Uint8Array(bin.length);
+    for(let j=0;j<bin.length;j++)u[j]=bin.charCodeAt(j);
+    return u;
+  }catch(e){return null}
+}
+function bytesToBase64(bytes){
+  let bin="";const chunk=0x8000;
+  for(let i=0;i<bytes.length;i+=chunk){
+    bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunk));
   }
-  if(contentB64.length>950000)return {ok:false,err:"Fișierul e prea mare pentru GitHub. Șterge pozele mari din produse și salvează din nou."};
+  return btoa(bin);
+}
+async function sha1Short(bytes){
+  const dig=await crypto.subtle.digest("SHA-1",bytes);
+  return Array.from(new Uint8Array(dig)).map(b=>b.toString(16).padStart(2,"0")).join("").slice(0,10);
+}
+async function putGithubFile(path, contentB64, message, token){
+  const api="https://api.github.com/repos/horeattt/urdapower/contents/"+path;
+  const headers={Accept:"application/vnd.github+json","Content-Type":"application/json",Authorization:"Bearer "+token,"X-GitHub-Api-Version":"2022-11-28"};
   async function fetchSha(){
     const gr=await fetch(api+"?ref=main&_="+Date.now(),{headers,cache:"no-store"});
     if(gr.ok){const j=await gr.json();return {ok:true,sha:j.sha}}
     if(gr.status===401||gr.status===403)return {ok:false,err:"Token invalid sau fără drept de scriere. Redeschide linkul de activare."};
     if(gr.status===404)return {ok:true,sha:null};
-    return {ok:false,err:"Nu am putut citi content.json de pe GitHub ("+gr.status+")."};
+    return {ok:false,err:"Nu am putut citi "+path+" de pe GitHub ("+gr.status+")."};
   }
   let lastDetail="";
   for(let attempt=0;attempt<4;attempt++){
@@ -988,14 +982,15 @@ async function publishToGitHub(contentStr){
       if(!sh.ok)return sh;
       sha=sh.sha;
     }catch(e){return {ok:false,err:"Eroare de rețea la citirea de pe GitHub (posibil blocare browser/extensie)."}}
-    const body={message:"Actualizare automată site URDA Power Center",content:contentB64,branch:"main"};
+    const body={message:message||("Upload "+path),content:contentB64,branch:"main"};
     if(sha)body.sha=sha;
     try{
       const pr=await fetch(api,{method:"PUT",headers,body:JSON.stringify(body),cache:"no-store"});
-      if(pr.ok)return {ok:true,stripped};
+      if(pr.ok)return {ok:true};
       let detail="";
       try{const j=await pr.json();detail=(j&&j.message)||""}catch(e){}
       lastDetail=detail;
+      if(/is the same as/i.test(detail))return {ok:true};
       if(pr.status===401||pr.status===403)return {ok:false,err:"Token respins de GitHub. Redeschide linkul de activare."};
       const shaConflict=pr.status===409||pr.status===422||/does not match/i.test(detail);
       if(shaConflict&&attempt<3){
@@ -1007,6 +1002,55 @@ async function publishToGitHub(contentStr){
     }catch(e){return {ok:false,err:"Eroare de rețea la publicare. Încearcă alt browser sau dezactivează AdBlock pe urdapower.ro."}}
   }
   return {ok:false,err:"Conflict la publicare. Așteaptă 1 secundă și apasă Salvează din nou. "+(lastDetail||"")};
+}
+async function materializeImages(obj, token){
+  const x=clone(obj);
+  async function one(v, stem){
+    if(typeof v!=="string"||v.indexOf("data:image")!==0)return v||"";
+    const ext=dataUrlExt(v);
+    const bytes=dataUrlBytes(v);
+    if(!ext||!bytes)throw new Error("Poză invalidă — nu pot publica data-URL.");
+    const h=await sha1Short(bytes);
+    const path="media/"+stem+"-"+h+"."+ext;
+    const put=await putGithubFile(path, bytesToBase64(bytes), "Media "+path, token);
+    if(!put.ok)throw new Error(put.err||("Nu am putut încărca "+path));
+    return path;
+  }
+  for(const p of (x.products||[])){
+    const src=(Array.isArray(p.imgs)&&p.imgs.length?p.imgs:(p.img?[p.img]:[])).filter(Boolean).slice(0,3);
+    const out=[];
+    for(let i=0;i<src.length;i++){
+      const n=await one(src[i], String(p.id||"p")+"-"+i);
+      if(n)out.push(n);
+    }
+    p.imgs=out;
+    p.img=out[0]||"";
+  }
+  for(const p of (x.posts||[])){
+    if(p.img)p.img=await one(p.img, "post-"+String(p.id||"x"));
+  }
+  for(const p of (x.blog||[])){
+    if(p.img)p.img=await one(p.img, "blog-"+String(p.id||"x"));
+  }
+  if(x.texts&&x.texts.heroImg)x.texts.heroImg=await one(x.texts.heroImg, "hero");
+  return x;
+}
+async function publishToGitHub(contentStr){
+  const token=getGhToken().trim();
+  if(!token)return {ok:false,needToken:true};
+  let parsed;
+  try{parsed=JSON.parse(contentStr)}catch(e){return {ok:false,err:"Conținut JSON invalid."}}
+  let payload;
+  try{payload=await materializeImages(parsed, token)}
+  catch(e){return {ok:false,err:(e&&e.message)||"Nu am putut încărca pozele pe GitHub."}}
+  const publishStr=JSON.stringify(payload,null,1);
+  let contentB64;
+  try{contentB64=utf8ToBase64(publishStr)}
+  catch(e){return {ok:false,err:"Conținutul e prea mare pentru publicare. Folosește poze mai mici."}}
+  if(contentB64.length>950000)return {ok:false,err:"Fișierul e prea mare pentru GitHub. Șterge pozele mari din produse și salvează din nou."};
+  const put=await putGithubFile("content.json", contentB64, "Actualizare automată site URDA Power Center", token);
+  if(!put.ok)return put;
+  return {ok:true,payload};
 }
 function queuePublish(){
   clearTimeout(publishTimer);
@@ -1031,12 +1075,13 @@ async function autoPublish(){
   publishing=false;
   if(res.ok){
     HAS_UNPUBLISHED=false;LAST_PUBLISH_ERR="";
+    if(res.payload)S=normalizeSite(res.payload);
     try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
     LAST_REMOTE=normalizeSite(clone(S));
-    toast((pendingSaveMsg||"Salvat")+" pe site — apare și pe linkul public"+(res.stripped?" · pozele foarte mari rămân doar local":""));
+    toast((pendingSaveMsg||"Salvat")+" pe site — apare și pe linkul public");
     pendingSaveMsg=null;
     updatePubBanner();
-    if(ADMIN)renderAdmin();
+    if(ADMIN){renderAdmin();renderSite()}
     return;
   }
   LAST_PUBLISH_ERR=res.err||"Nu s-a putut publica pe site";
@@ -1099,7 +1144,26 @@ function renderImgsPick(){
 function compressImageFile(file){
   return new Promise((resolve,reject)=>{
     const fr=new FileReader();
-    fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,720/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*k)||1;c.height=Math.round(im.height*k)||1;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);let q=.68,out=c.toDataURL("image/jpeg",q);while(out.length>90000&&q>.45){q-=.08;out=c.toDataURL("image/jpeg",q)}resolve(out)};im.onerror=()=>reject(new Error("img"));im.src=fr.result};
+    fr.onload=()=>{
+      const im=new Image();
+      im.onload=()=>{
+        const sides=[720,560,480], targets=[70000,60000,50000];
+        let out="";
+        for(let si=0;si<sides.length;si++){
+          const maxSide=sides[si], target=targets[si];
+          const k=Math.min(1,maxSide/Math.max(im.width,im.height));
+          const c=document.createElement("canvas");
+          c.width=Math.round(im.width*k)||1;c.height=Math.round(im.height*k)||1;
+          const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+          let q=.72;out=c.toDataURL("image/jpeg",q);
+          while(out.length>target&&q>.38){q-=.07;out=c.toDataURL("image/jpeg",q)}
+          if(out.length<=target||si===sides.length-1)break;
+        }
+        resolve(out);
+      };
+      im.onerror=()=>reject(new Error("img"));
+      im.src=fr.result;
+    };
     fr.onerror=()=>reject(new Error("file"));
     fr.readAsDataURL(file);
   });
@@ -1866,11 +1930,25 @@ $("#nav").addEventListener("click",()=>$("#nav").classList.remove("on"));
   const remote=await fetchRemoteContent();
   const draft=loadDraft();
   LAST_REMOTE=remote;
-  /* Site-ul public și linkurile partajate arată DOAR content.json de pe GitHub */
-  if(remote)S=remote;
-  else S=normalizeSite(clone(DEFAULTS));
-  if(draft&&remote)syncUnpublishedFlag();
-  else if(draft&&!remote){S=draft;HAS_UNPUBLISHED=true}
+  /* Vizitatorii publici văd DOAR content.json de pe GitHub */
+  if(!ADMIN){
+    S=remote||normalizeSite(clone(DEFAULTS));
+  }else if(draft){
+    S=draft;
+    if(remote){
+      syncUnpublishedFlag();
+      const remoteById={};(remote.products||[]).forEach(p=>{remoteById[p.id]=p});
+      const draftHasImgRemoteLacks=(draft.products||[]).some(dp=>{
+        const rp=remoteById[dp.id];
+        const dSigs=[...(Array.isArray(dp.imgs)?dp.imgs:[]),dp.img].filter(Boolean).map(imgSig);
+        const rSigs=rp?[...(Array.isArray(rp.imgs)?rp.imgs:[]),rp.img].filter(Boolean).map(imgSig):[];
+        return dSigs.some(sig=>sig&&rSigs.indexOf(sig)<0);
+      });
+      if(draftHasImgRemoteLacks)HAS_UNPUBLISHED=true;
+    }else HAS_UNPUBLISHED=true;
+  }else{
+    S=remote||normalizeSite(clone(DEFAULTS));
+  }
   renderSite();setAdmin(ADMIN);bootVisit();consumeSetupHash();
   updatePubBanner();
   try{
