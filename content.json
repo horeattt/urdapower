@@ -131,7 +131,7 @@
    "viteza": null,
    "desc": "",
    "dotari": "Filtru HEPA",
-   "faraPermis": true,
+   "faraPermis": false,
    "activ": true,
    "exemplu": false,
    "imgs": [],

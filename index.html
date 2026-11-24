@@ -1719,8 +1719,12 @@ function readImg(file){
     }
   }).catch(()=>toast("Fișierul ales nu este o imagine validă"));
 }
+function defaultFaraPermis(catId){
+  return hubForCat(catId)!=="electro";
+}
 function prodForm(id){
-  const p=id?S.products.find(x=>x.id===id):{nume:"",cat:(S.cats[0]||{}).id,pret:"",pretVechi:"",putere:"",autonomie:"",viteza:25,faraPermis:true,activ:true,exemplu:false,img:"",imgs:[],stoc:"in_stoc",desc:"",dotari:""};
+  const defaultCat=(S.cats[0]||{}).id;
+  const p=id?S.products.find(x=>x.id===id):{nume:"",cat:defaultCat,pret:"",pretVechi:"",putere:"",autonomie:"",viteza:25,faraPermis:defaultFaraPermis(defaultCat),activ:true,exemplu:false,img:"",imgs:[],stoc:"in_stoc",desc:"",dotari:""};
   const imgs=prodImgs(p);
   const v=x=>x===null||x===undefined?"":esc(x);
   const st=p.stoc||"in_stoc";
@@ -1747,6 +1751,10 @@ function prodForm(id){
   $("#prodF").dataset.imgs=JSON.stringify(imgs);
   pendingImgs=imgs.slice();
   renderImgsPick();
+  if(!id){
+    const catSel=$("#pc"), fp=$("#prodF").querySelector('input[name="faraPermis"]');
+    if(catSel&&fp)catSel.addEventListener("change",()=>{fp.checked=defaultFaraPermis(catSel.value)});
+  }
 }
 function postForm(id, kind){
   const key=kind==="blog"?"blog":"posts";
