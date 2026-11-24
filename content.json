@@ -117,12 +117,6 @@
    "nume": "Plite",
    "ico": "electro",
    "hub": "electro"
-  },
-  {
-   "id": "cmws6uuuakbd",
-   "nume": "Avioane",
-   "ico": "cargo",
-   "hub": "vehicule"
   }
  ],
  "products": [
@@ -154,7 +148,7 @@
    "autonomie": 60,
    "viteza": 25,
    "desc": "",
-   "dotari": "Vsbdbdnvbsjsj",
+   "dotari": "",
    "faraPermis": true,
    "activ": true,
    "exemplu": false,
@@ -174,7 +168,7 @@
    "autonomie": null,
    "viteza": 25,
    "desc": "125 cc",
-   "dotari": "Hendndn",
+   "dotari": "",
    "faraPermis": true,
    "activ": true,
    "exemplu": false,
@@ -218,7 +212,7 @@
    "activ": true,
    "exemplu": false,
    "img": "asset:chilia",
-   "desc": "Scuter electric economic, cu frână pe disc și afișaj digital.   vevefvfvef",
+   "desc": "Scuter electric economic, cu frână pe disc și afișaj digital.",
    "dotari": "Motor electric de 1000 W\nAutonomie de până la 55 km\nViteză maximă 25 km/h\nFără permis de conducere\nFrână pe disc\nAfișaj digital și suspensie confortabilă",
    "imgs": [
     "asset:chilia"
@@ -296,7 +290,7 @@
    "exemplu": true,
    "img": "",
    "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
-   "dotari": "testetetete",
+   "dotari": "",
    "imgs": [],
    "stoc": "in_stoc"
   },
@@ -436,7 +430,7 @@
    "exemplu": false,
    "img": "asset:e8",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "20 L hguscbuawbubaduvbdubv",
+   "dotari": "20 L",
    "imgs": [],
    "stoc": "in_stoc"
   },
@@ -476,7 +470,7 @@
    "exemplu": false,
    "img": "asset:e7",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "15 bar sdgsdghhggf",
+   "dotari": "15 bar",
    "imgs": [],
    "stoc": "in_stoc"
   },
@@ -507,7 +501,7 @@
    "titlu": "rhm,hj,mhj,ghj,",
    "data": "2026-11-22",
    "text": "fgmrhjmhj",
-   "activ": true,
+   "activ": false,
    "img": ""
   },
   {
@@ -541,7 +535,7 @@
    "titlu": "ertjetye",
    "data": "2026-11-22",
    "text": "etyjetyjkrtyryukry",
-   "activ": true,
+   "activ": false,
    "img": "media/blog-bmws6ujhrpv5-c5e54d8782-fix.jpg"
   },
   {
@@ -581,13 +575,6 @@
    "luni": "6,12,24,36",
    "dobanda": null,
    "nota": "Finanțare prin TBI Bank"
-  },
-  {
-   "id": "rmws6vcr4c70",
-   "nume": "Gratis",
-   "luni": "11",
-   "dobanda": 123,
-   "nota": ""
   }
  ]
 }
