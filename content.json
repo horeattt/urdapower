@@ -24,8 +24,7 @@
   "quick1": "Modele care se conduc fără permis",
   "quick2": "Plata în rate, inclusiv fără avans",
   "quick3": "Livrare în județul Arad și împrejurimi",
-  "quick4": "Service, piese și garanție extinsă",
-  "_ping": "ok"
+  "quick4": "Service, piese și garanție extinsă"
  },
  "cats": [
   {
@@ -59,125 +58,67 @@
    "hub": "vehicule"
   },
   {
+   "hub": "electro",
    "id": "frigidere",
    "nume": "Frigidere",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "spalatoare",
    "nume": "Mașini de spălat",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "aragazuri",
    "nume": "Aragazuri",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "cuptoare",
    "nume": "Cuptoare",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "aspiratoare",
    "nume": "Aspiratoare",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "tv",
    "nume": "Televizoare",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "cafea",
    "nume": "Aparate de cafea",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "microunde",
    "nume": "Cuptoare cu microunde",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "clima",
    "nume": "Aer condiționat",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   },
   {
+   "hub": "electro",
    "id": "plite",
    "nume": "Plite",
-   "ico": "electro",
-   "hub": "electro"
+   "ico": "electro"
   }
  ],
  "products": [
-  {
-   "id": "pmwv30n313lo",
-   "nume": "Aspirator RTS HJX-2205",
-   "cat": "aspiratoare",
-   "pret": 260,
-   "pretVechi": null,
-   "putere": 700,
-   "autonomie": null,
-   "viteza": null,
-   "desc": "",
-   "dotari": "Filtru HEPA",
-   "faraPermis": false,
-   "activ": true,
-   "exemplu": false,
-   "imgs": [],
-   "img": "",
-   "stoc": "la_furnizor"
-  },
-  {
-   "id": "pmws8mpyriyw",
-   "nume": "RDB Paris",
-   "cat": "scutere",
-   "pret": 3150,
-   "pretVechi": 3500,
-   "putere": 600,
-   "autonomie": 60,
-   "viteza": 25,
-   "desc": "",
-   "dotari": "",
-   "faraPermis": true,
-   "activ": true,
-   "exemplu": false,
-   "imgs": [
-    "media/pub/rdb-paris.jpg"
-   ],
-   "img": "media/pub/rdb-paris.jpg",
-   "stoc": "in_stoc"
-  },
-  {
-   "id": "pmws98uzvl0b",
-   "nume": "Rdb atv",
-   "cat": "atv",
-   "pret": 4990,
-   "pretVechi": null,
-   "putere": null,
-   "autonomie": null,
-   "viteza": 25,
-   "desc": "125 cc",
-   "dotari": "",
-   "faraPermis": true,
-   "activ": true,
-   "exemplu": false,
-   "imgs": [
-    "media/pmws98uzvl0b-0-7e919ee548-fix.jpg"
-   ],
-   "img": "media/pmws98uzvl0b-0-7e919ee548-fix.jpg",
-   "stoc": "in_stoc"
-  },
   {
    "id": "p1",
    "nume": "RDB Inspire",
@@ -190,12 +131,11 @@
    "faraPermis": true,
    "activ": true,
    "exemplu": false,
-   "img": "media/p1-0-844d3a025b-fix.jpg",
+   "img": "asset:inspire",
    "desc": "Scuter electric cu design modern și confort sporit, potrivit pentru drumurile de zi cu zi.",
    "dotari": "Motor electric de 2000 W\nAutonomie de până la 60 km\nViteză maximă 25 km/h\nSe conduce fără permis\nDesign modern și confort sporit",
    "imgs": [
-    "media/p1-0-844d3a025b-fix.jpg",
-    "media/p1-1-71b61b2f19-fix.jpg"
+    "asset:inspire"
    ],
    "stoc": "in_stoc"
   },
@@ -221,22 +161,21 @@
   },
   {
    "id": "p3",
-   "nume": "RDB Long",
+   "nume": "Triciclu electric pasageri",
    "cat": "tricicluri",
-   "pret": 6300,
+   "pret": null,
    "pretVechi": null,
-   "putere": 2000,
-   "autonomie": 60,
+   "putere": null,
+   "autonomie": null,
    "viteza": null,
-   "faraPermis": true,
+   "faraPermis": false,
    "activ": true,
-   "exemplu": false,
-   "img": "media/p3-0-4afd67f9d4-fix.jpg",
+   "exemplu": true,
+   "img": "asset:triciclu",
    "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
    "dotari": "",
    "imgs": [
-    "media/p3-0-4afd67f9d4-fix.jpg",
-    "media/p3-1-0ad5077c5f-fix.jpg"
+    "asset:triciclu"
    ],
    "stoc": "in_stoc"
   },
@@ -311,7 +250,9 @@
    "img": "asset:e1",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "348 L",
-   "imgs": [],
+   "imgs": [
+    "asset:e1"
+   ],
    "stoc": "in_stoc"
   },
   {
@@ -331,7 +272,9 @@
    "img": "asset:e2",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "8 kg",
-   "imgs": [],
+   "imgs": [
+    "asset:e2"
+   ],
    "stoc": "in_stoc"
   },
   {
@@ -351,7 +294,9 @@
    "img": "asset:e3",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "4 ochiuri",
-   "imgs": [],
+   "imgs": [
+    "asset:e3"
+   ],
    "stoc": "in_stoc"
   },
   {
@@ -371,7 +316,9 @@
    "img": "asset:e4",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "71 L",
-   "imgs": [],
+   "imgs": [
+    "asset:e4"
+   ],
    "stoc": "in_stoc"
   },
   {
@@ -391,7 +338,9 @@
    "img": "asset:e5",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "2 L",
-   "imgs": [],
+   "imgs": [
+    "asset:e5"
+   ],
    "stoc": "in_stoc"
   },
   {
@@ -411,47 +360,9 @@
    "img": "asset:e6",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "43 inch",
-   "imgs": [],
-   "stoc": "in_stoc"
-  },
-  {
-   "id": "e8",
-   "nume": "Cuptor cu microunde",
-   "cat": "microunde",
-   "pret": 299,
-   "pretVechi": 399,
-   "spec": "20 L",
-   "orientativ": true,
-   "putere": null,
-   "autonomie": null,
-   "viteza": null,
-   "faraPermis": false,
-   "activ": true,
-   "exemplu": false,
-   "img": "asset:e8",
-   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "20 L",
-   "imgs": [],
-   "stoc": "in_stoc"
-  },
-  {
-   "id": "e9",
-   "nume": "Aer condiționat",
-   "cat": "clima",
-   "pret": 1699,
-   "pretVechi": 2099,
-   "spec": "12000 BTU",
-   "orientativ": true,
-   "putere": null,
-   "autonomie": null,
-   "viteza": null,
-   "faraPermis": false,
-   "activ": true,
-   "exemplu": false,
-   "img": "asset:e9",
-   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "12000 BTU",
-   "imgs": [],
+   "imgs": [
+    "asset:e6"
+   ],
    "stoc": "in_stoc"
   },
   {
@@ -471,7 +382,53 @@
    "img": "asset:e7",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "15 bar",
-   "imgs": [],
+   "imgs": [
+    "asset:e7"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e8",
+   "nume": "Cuptor cu microunde",
+   "cat": "microunde",
+   "pret": 299,
+   "pretVechi": 399,
+   "spec": "20 L",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e8",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "20 L",
+   "imgs": [
+    "asset:e8"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "e9",
+   "nume": "Aer condiționat",
+   "cat": "clima",
+   "pret": 1699,
+   "pretVechi": 2099,
+   "spec": "12000 BTU",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e9",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "12000 BTU",
+   "imgs": [
+    "asset:e9"
+   ],
    "stoc": "in_stoc"
   },
   {
@@ -486,24 +443,18 @@
    "autonomie": null,
    "viteza": null,
    "faraPermis": false,
-   "activ": true,
+   "activ": false,
    "exemplu": false,
    "img": "asset:e10",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
    "dotari": "4 zone",
-   "imgs": [],
+   "imgs": [
+    "asset:e10"
+   ],
    "stoc": "in_stoc"
   }
  ],
  "posts": [
-  {
-   "id": "nmws6u4kweme",
-   "titlu": "rhm,hj,mhj,ghj,",
-   "data": "2026-11-22",
-   "text": "fgmrhjmhj",
-   "activ": false,
-   "img": ""
-  },
   {
    "id": "n1",
    "titlu": "Dă startul reducerilor în luna noiembrie!",
@@ -530,14 +481,6 @@
   }
  ],
  "blog": [
-  {
-   "id": "bmws6ujhrpv5",
-   "titlu": "ertjetye",
-   "data": "2026-11-22",
-   "text": "etyjetyjkrtyryukry",
-   "activ": false,
-   "img": "media/blog-bmws6ujhrpv5-c5e54d8782-fix.jpg"
-  },
   {
    "id": "b1",
    "titlu": "Showroomul din Lipova se pregătește și pentru electrocasnice",
