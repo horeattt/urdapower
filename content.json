@@ -127,6 +127,26 @@
  ],
  "products": [
   {
+   "id": "pmwzjphrzvnd",
+   "nume": "Rdb",
+   "cat": "scutere",
+   "pret": 200,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": 25,
+   "desc": "",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": true,
+   "imgs": [
+    "media/pmwzjphrzvnd-0-1eda9834f4.jpg"
+   ],
+   "img": "media/pmwzjphrzvnd-0-1eda9834f4.jpg",
+   "stoc": "in_stoc"
+  },
+  {
    "id": "pmws98uzvl0b",
    "nume": "Rdb atv",
    "cat": "atv",
