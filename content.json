@@ -24,7 +24,8 @@
   "quick1": "Modele care se conduc fără permis",
   "quick2": "Plata în rate, inclusiv fără avans",
   "quick3": "Livrare în județul Arad și împrejurimi",
-  "quick4": "Service, piese și garanție extinsă"
+  "quick4": "Service, piese și garanție extinsă",
+  "_ping": "ok"
  },
  "cats": [
   {
@@ -58,67 +59,114 @@
    "hub": "vehicule"
   },
   {
-   "hub": "electro",
    "id": "frigidere",
    "nume": "Frigidere",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "spalatoare",
    "nume": "Mașini de spălat",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "aragazuri",
    "nume": "Aragazuri",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "cuptoare",
    "nume": "Cuptoare",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "aspiratoare",
    "nume": "Aspiratoare",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "tv",
    "nume": "Televizoare",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "cafea",
    "nume": "Aparate de cafea",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "microunde",
    "nume": "Cuptoare cu microunde",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "clima",
    "nume": "Aer condiționat",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
   },
   {
-   "hub": "electro",
    "id": "plite",
    "nume": "Plite",
-   "ico": "electro"
+   "ico": "electro",
+   "hub": "electro"
+  },
+  {
+   "id": "cmws6uuuakbd",
+   "nume": "Avioane",
+   "ico": "cargo",
+   "hub": "vehicule"
   }
  ],
  "products": [
+  {
+   "id": "pmws98uzvl0b",
+   "nume": "Rdb atv",
+   "cat": "atv",
+   "pret": 4990,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": 25,
+   "desc": "125 cc",
+   "dotari": "Hendndn",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/pmws98uzvl0b-0-7e919ee548.jpg"
+   ],
+   "img": "media/pmws98uzvl0b-0-7e919ee548.jpg",
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "pmws8mpyriyw",
+   "nume": "RDB Paris",
+   "cat": "scutere",
+   "pret": 3150,
+   "pretVechi": 3500,
+   "putere": 600,
+   "autonomie": 60,
+   "viteza": 25,
+   "desc": "",
+   "dotari": "Vsbdbdnvbsjsj",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/pmws8mpyriyw-0-37829a5b00.jpg",
+    "media/pmws8mpyriyw-1-2cdbf1775a.jpg"
+   ],
+   "img": "media/pmws8mpyriyw-0-37829a5b00.jpg",
+   "stoc": "in_stoc"
+  },
   {
    "id": "p1",
    "nume": "RDB Inspire",
@@ -131,11 +179,13 @@
    "faraPermis": true,
    "activ": true,
    "exemplu": false,
-   "img": "asset:inspire",
+   "img": "media/p1-0-9d23592c3a.jpg",
    "desc": "Scuter electric cu design modern și confort sporit, potrivit pentru drumurile de zi cu zi.",
    "dotari": "Motor electric de 2000 W\nAutonomie de până la 60 km\nViteză maximă 25 km/h\nSe conduce fără permis\nDesign modern și confort sporit",
    "imgs": [
-    "asset:inspire"
+    "media/p1-0-9d23592c3a.jpg",
+    "media/p1-1-9bb1f79a09.jpg",
+    "media/p1-2-1bd63b5ba4.jpg"
    ],
    "stoc": "in_stoc"
   },
@@ -151,31 +201,35 @@
    "faraPermis": true,
    "activ": true,
    "exemplu": false,
-   "img": "asset:chilia",
-   "desc": "Scuter electric economic, cu frână pe disc și afișaj digital.",
+   "img": "media/p2-0-e1194d3e37.jpg",
+   "desc": "Scuter electric economic, cu frână pe disc și afișaj digital.   vevefvfvef",
    "dotari": "Motor electric de 1000 W\nAutonomie de până la 55 km\nViteză maximă 25 km/h\nFără permis de conducere\nFrână pe disc\nAfișaj digital și suspensie confortabilă",
    "imgs": [
-    "asset:chilia"
+    "media/p2-0-e1194d3e37.jpg",
+    "media/p2-1-b8520cb5d8.jpg",
+    "media/p2-2-409fe0b760.jpg"
    ],
    "stoc": "in_stoc"
   },
   {
    "id": "p3",
-   "nume": "Triciclu electric pasageri",
+   "nume": "RDB Long",
    "cat": "tricicluri",
-   "pret": null,
+   "pret": 6300,
    "pretVechi": null,
-   "putere": null,
-   "autonomie": null,
+   "putere": 2000,
+   "autonomie": 60,
    "viteza": null,
-   "faraPermis": false,
+   "faraPermis": true,
    "activ": true,
-   "exemplu": true,
-   "img": "asset:triciclu",
+   "exemplu": false,
+   "img": "media/p3-0-871ab8f327.jpg",
    "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
    "dotari": "",
    "imgs": [
-    "asset:triciclu"
+    "media/p3-0-871ab8f327.jpg",
+    "media/p3-1-4afd67f9d4.jpg",
+    "media/p3-2-0ad5077c5f.jpg"
    ],
    "stoc": "in_stoc"
   },
@@ -229,7 +283,7 @@
    "exemplu": true,
    "img": "",
    "desc": "Produs exemplu. Completează din administrare modelul, prețul și specificațiile reale.",
-   "dotari": "",
+   "dotari": "testetetete",
    "imgs": [],
    "stoc": "in_stoc"
   },
@@ -366,28 +420,6 @@
    "stoc": "in_stoc"
   },
   {
-   "id": "e7",
-   "nume": "Cafetieră espresso",
-   "cat": "cafea",
-   "pret": 349,
-   "pretVechi": 449,
-   "spec": "15 bar",
-   "orientativ": true,
-   "putere": null,
-   "autonomie": null,
-   "viteza": null,
-   "faraPermis": false,
-   "activ": true,
-   "exemplu": false,
-   "img": "asset:e7",
-   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "15 bar",
-   "imgs": [
-    "asset:e7"
-   ],
-   "stoc": "in_stoc"
-  },
-  {
    "id": "e8",
    "nume": "Cuptor cu microunde",
    "cat": "microunde",
@@ -403,7 +435,7 @@
    "exemplu": false,
    "img": "asset:e8",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
-   "dotari": "20 L",
+   "dotari": "20 L hguscbuawbubaduvbdubv",
    "imgs": [
     "asset:e8"
    ],
@@ -432,6 +464,28 @@
    "stoc": "in_stoc"
   },
   {
+   "id": "e7",
+   "nume": "Cafetieră espresso",
+   "cat": "cafea",
+   "pret": 349,
+   "pretVechi": 449,
+   "spec": "15 bar",
+   "orientativ": true,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "img": "asset:e7",
+   "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
+   "dotari": "15 bar sdgsdghhggf",
+   "imgs": [
+    "asset:e7"
+   ],
+   "stoc": "in_stoc"
+  },
+  {
    "id": "e10",
    "nume": "Plită cu inducție",
    "cat": "plite",
@@ -443,7 +497,7 @@
    "autonomie": null,
    "viteza": null,
    "faraPermis": false,
-   "activ": false,
+   "activ": true,
    "exemplu": false,
    "img": "asset:e10",
    "desc": "Preț orientativ. Model de prezentare pentru catalogul de electrocasnice, aflat în pregătire.",
@@ -455,6 +509,14 @@
   }
  ],
  "posts": [
+  {
+   "id": "nmws6u4kweme",
+   "titlu": "rhm,hj,mhj,ghj,",
+   "data": "2026-11-22",
+   "text": "fgmrhjmhj",
+   "activ": true,
+   "img": ""
+  },
   {
    "id": "n1",
    "titlu": "Dă startul reducerilor în luna noiembrie!",
@@ -481,6 +543,14 @@
   }
  ],
  "blog": [
+  {
+   "id": "bmws6ujhrpv5",
+   "titlu": "ertjetye",
+   "data": "2026-11-22",
+   "text": "etyjetyjkrtyryukry",
+   "activ": true,
+   "img": "media/blog-bmws6ujhrpv5-c5e54d8782.jpg"
+  },
   {
    "id": "b1",
    "titlu": "Showroomul din Lipova se pregătește și pentru electrocasnice",
@@ -518,6 +588,13 @@
    "luni": "6,12,24,36",
    "dobanda": null,
    "nota": "Finanțare prin TBI Bank"
+  },
+  {
+   "id": "rmws6vcr4c70",
+   "nume": "Gratis",
+   "luni": "11",
+   "dobanda": 123,
+   "nota": ""
   }
  ]
 }
