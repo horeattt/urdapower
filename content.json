@@ -506,6 +506,106 @@
     "asset:e10"
    ],
    "stoc": "in_stoc"
+  },
+  {
+   "id": "auditphoto1",
+   "nume": "AUDIT-POZA-01-VERDE",
+   "cat": "scutere",
+   "pret": 111,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "desc": "AUDIT UPLOAD PHOTO 1 — 20261127-191750",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/audit-20261127-191750-1-0349b8ac3f.jpg"
+   ],
+   "img": "media/audit-20261127-191750-1-0349b8ac3f.jpg",
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "auditphoto2",
+   "nume": "AUDIT-POZA-02-ALBASTRU",
+   "cat": "scutere",
+   "pret": 222,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "desc": "AUDIT UPLOAD PHOTO 2 — 20261127-191750",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/audit-20261127-191750-2-45fad150f7.jpg"
+   ],
+   "img": "media/audit-20261127-191750-2-45fad150f7.jpg",
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "auditphoto3",
+   "nume": "AUDIT-POZA-03-CHIHLIMBAR",
+   "cat": "scutere",
+   "pret": 333,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "desc": "AUDIT UPLOAD PHOTO 3 — 20261127-191750",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/audit-20261127-191750-3-07bd925a15.jpg"
+   ],
+   "img": "media/audit-20261127-191750-3-07bd925a15.jpg",
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "auditphoto4",
+   "nume": "AUDIT-POZA-04-ROSU",
+   "cat": "scutere",
+   "pret": 444,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "desc": "AUDIT UPLOAD PHOTO 4 — 20261127-191750",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/audit-20261127-191750-4-67f2909d8d.jpg"
+   ],
+   "img": "media/audit-20261127-191750-4-67f2909d8d.jpg",
+   "stoc": "in_stoc"
+  },
+  {
+   "id": "auditphoto5",
+   "nume": "AUDIT-POZA-05-MOV",
+   "cat": "scutere",
+   "pret": 555,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "desc": "AUDIT UPLOAD PHOTO 5 — 20261127-191750",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/audit-20261127-191750-5-59089955b8.jpg"
+   ],
+   "img": "media/audit-20261127-191750-5-59089955b8.jpg",
+   "stoc": "in_stoc"
   }
  ],
  "posts": [
@@ -514,7 +614,7 @@
    "titlu": "rhm,hj,mhj,ghj,",
    "data": "2026-11-22",
    "text": "fgmrhjmhj",
-   "activ": true,
+   "activ": false,
    "img": ""
   },
   {
@@ -540,6 +640,46 @@
    "activ": true,
    "img": "asset:post_electro",
    "text": "Un nou proiect prinde contur la URDA Power Center! Lucrările sunt în plină desfășurare pentru amenajarea viitorului nostru magazin de electrocasnice.\n\nNe pregătim să extindem activitatea și să vă oferim o gamă și mai variată de produse."
+  },
+  {
+   "id": "audittext1",
+   "titlu": "AUDIT TEXT 01 — Salvare online promoții URDA",
+   "data": "2026-11-27",
+   "text": "AUDIT TEXT 01 — Salvare online promoții URDA\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-1-0349b8ac3f.jpg",
+   "activ": true,
+   "img": "media/audit-20261127-191750-1-0349b8ac3f.jpg"
+  },
+  {
+   "id": "audittext2",
+   "titlu": "AUDIT TEXT 02 — Upload poze pe GitHub Pages",
+   "data": "2026-11-27",
+   "text": "AUDIT TEXT 02 — Upload poze pe GitHub Pages\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-2-45fad150f7.jpg",
+   "activ": true,
+   "img": "media/audit-20261127-191750-2-45fad150f7.jpg"
+  },
+  {
+   "id": "audittext3",
+   "titlu": "AUDIT TEXT 03 — Publicare automată content.json",
+   "data": "2026-11-27",
+   "text": "AUDIT TEXT 03 — Publicare automată content.json\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-3-07bd925a15.jpg",
+   "activ": true,
+   "img": "media/audit-20261127-191750-3-07bd925a15.jpg"
+  },
+  {
+   "id": "audittext4",
+   "titlu": "AUDIT TEXT 04 — Verificare hard refresh live",
+   "data": "2026-11-27",
+   "text": "AUDIT TEXT 04 — Verificare hard refresh live\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-4-67f2909d8d.jpg",
+   "activ": true,
+   "img": "media/audit-20261127-191750-4-67f2909d8d.jpg"
+  },
+  {
+   "id": "audittext5",
+   "titlu": "AUDIT TEXT 05 — Test cross-device media files",
+   "data": "2026-11-27",
+   "text": "AUDIT TEXT 05 — Test cross-device media files\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-5-59089955b8.jpg",
+   "activ": true,
+   "img": "media/audit-20261127-191750-5-59089955b8.jpg"
   }
  ],
  "blog": [
@@ -548,7 +688,7 @@
    "titlu": "ertjetye",
    "data": "2026-11-22",
    "text": "etyjetyjkrtyryukry",
-   "activ": true,
+   "activ": false,
    "img": "media/blog-bmws6ujhrpv5-c5e54d8782.jpg"
   },
   {
