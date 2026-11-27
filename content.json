@@ -127,6 +127,27 @@
  ],
  "products": [
   {
+   "id": "pmwzjsy6xmw2",
+   "nume": "Masina de spalat RTS WMF70270AB-S 7Kg, 1200RPM, Motor Inverter, Steam, Slim, Clasa A",
+   "cat": "spalatoare",
+   "pret": 1200,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": null,
+   "desc": "",
+   "dotari": "",
+   "faraPermis": false,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/pmwzjsy6xmw2-0-d45a1d8a12.jpg",
+    "media/pmwzjsy6xmw2-1-ba29cda1ca.jpg"
+   ],
+   "img": "media/pmwzjsy6xmw2-0-d45a1d8a12.jpg",
+   "stoc": "in_stoc"
+  },
+  {
    "id": "pmwzjphrzvnd",
    "nume": "Rdb",
    "cat": "scutere",
