@@ -522,9 +522,9 @@
    "activ": true,
    "exemplu": false,
    "imgs": [
-    "media/audit-20261127-191750-1-0349b8ac3f.jpg"
+    "media/audit-20261127-191750-1-8cd4f0502e.jpg"
    ],
-   "img": "media/audit-20261127-191750-1-0349b8ac3f.jpg",
+   "img": "media/audit-20261127-191750-1-8cd4f0502e.jpg",
    "stoc": "in_stoc"
   },
   {
@@ -542,9 +542,9 @@
    "activ": true,
    "exemplu": false,
    "imgs": [
-    "media/audit-20261127-191750-2-45fad150f7.jpg"
+    "media/audit-20261127-191750-2-0034e6e277.jpg"
    ],
-   "img": "media/audit-20261127-191750-2-45fad150f7.jpg",
+   "img": "media/audit-20261127-191750-2-0034e6e277.jpg",
    "stoc": "in_stoc"
   },
   {
@@ -562,9 +562,9 @@
    "activ": true,
    "exemplu": false,
    "imgs": [
-    "media/audit-20261127-191750-3-07bd925a15.jpg"
+    "media/audit-20261127-191750-3-dd9491705b.jpg"
    ],
-   "img": "media/audit-20261127-191750-3-07bd925a15.jpg",
+   "img": "media/audit-20261127-191750-3-dd9491705b.jpg",
    "stoc": "in_stoc"
   },
   {
@@ -582,9 +582,9 @@
    "activ": true,
    "exemplu": false,
    "imgs": [
-    "media/audit-20261127-191750-4-67f2909d8d.jpg"
+    "media/audit-20261127-191750-4-8cc1845d35.jpg"
    ],
-   "img": "media/audit-20261127-191750-4-67f2909d8d.jpg",
+   "img": "media/audit-20261127-191750-4-8cc1845d35.jpg",
    "stoc": "in_stoc"
   },
   {
@@ -602,9 +602,9 @@
    "activ": true,
    "exemplu": false,
    "imgs": [
-    "media/audit-20261127-191750-5-59089955b8.jpg"
+    "media/audit-20261127-191750-5-3b71c726a7.jpg"
    ],
-   "img": "media/audit-20261127-191750-5-59089955b8.jpg",
+   "img": "media/audit-20261127-191750-5-3b71c726a7.jpg",
    "stoc": "in_stoc"
   }
  ],
@@ -645,41 +645,41 @@
    "id": "audittext1",
    "titlu": "AUDIT TEXT 01 — Salvare online promoții URDA",
    "data": "2026-11-27",
-   "text": "AUDIT TEXT 01 — Salvare online promoții URDA\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-1-0349b8ac3f.jpg",
+   "text": "AUDIT TEXT 01 — Salvare online promoții URDA\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-1-8cd4f0502e.jpg",
    "activ": true,
-   "img": "media/audit-20261127-191750-1-0349b8ac3f.jpg"
+   "img": "media/audit-20261127-191750-1-8cd4f0502e.jpg"
   },
   {
    "id": "audittext2",
    "titlu": "AUDIT TEXT 02 — Upload poze pe GitHub Pages",
    "data": "2026-11-27",
-   "text": "AUDIT TEXT 02 — Upload poze pe GitHub Pages\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-2-45fad150f7.jpg",
+   "text": "AUDIT TEXT 02 — Upload poze pe GitHub Pages\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-2-0034e6e277.jpg",
    "activ": true,
-   "img": "media/audit-20261127-191750-2-45fad150f7.jpg"
+   "img": "media/audit-20261127-191750-2-0034e6e277.jpg"
   },
   {
    "id": "audittext3",
    "titlu": "AUDIT TEXT 03 — Publicare automată content.json",
    "data": "2026-11-27",
-   "text": "AUDIT TEXT 03 — Publicare automată content.json\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-3-07bd925a15.jpg",
+   "text": "AUDIT TEXT 03 — Publicare automată content.json\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-3-dd9491705b.jpg",
    "activ": true,
-   "img": "media/audit-20261127-191750-3-07bd925a15.jpg"
+   "img": "media/audit-20261127-191750-3-dd9491705b.jpg"
   },
   {
    "id": "audittext4",
    "titlu": "AUDIT TEXT 04 — Verificare hard refresh live",
    "data": "2026-11-27",
-   "text": "AUDIT TEXT 04 — Verificare hard refresh live\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-4-67f2909d8d.jpg",
+   "text": "AUDIT TEXT 04 — Verificare hard refresh live\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-4-8cc1845d35.jpg",
    "activ": true,
-   "img": "media/audit-20261127-191750-4-67f2909d8d.jpg"
+   "img": "media/audit-20261127-191750-4-8cc1845d35.jpg"
   },
   {
    "id": "audittext5",
    "titlu": "AUDIT TEXT 05 — Test cross-device media files",
    "data": "2026-11-27",
-   "text": "AUDIT TEXT 05 — Test cross-device media files\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-5-59089955b8.jpg",
+   "text": "AUDIT TEXT 05 — Test cross-device media files\n\nStamp audit publicare: 20261127-191750\nMedia: media/audit-20261127-191750-5-3b71c726a7.jpg",
    "activ": true,
-   "img": "media/audit-20261127-191750-5-59089955b8.jpg"
+   "img": "media/audit-20261127-191750-5-3b71c726a7.jpg"
   }
  ],
  "blog": [
