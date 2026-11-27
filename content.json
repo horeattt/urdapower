@@ -127,6 +127,26 @@
  ],
  "products": [
   {
+   "id": "pmwzk81w50md",
+   "nume": "VSX ROSU",
+   "cat": "scutere",
+   "pret": 3600,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": 25,
+   "desc": "Bsndjsk",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/pmwzk81w50md-0-7f294520f8.jpg"
+   ],
+   "img": "media/pmwzk81w50md-0-7f294520f8.jpg",
+   "stoc": "in_stoc"
+  },
+  {
    "id": "pmwzjsy6xmw2",
    "nume": "Masina de spalat RTS WMF70270AB-S 7Kg, 1200RPM, Motor Inverter, Steam, Slim, Clasa A",
    "cat": "spalatoare",
