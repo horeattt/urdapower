@@ -1043,6 +1043,15 @@ async function publishToGitHub(contentStr){
   let payload;
   try{payload=await materializeImages(parsed, token)}
   catch(e){return {ok:false,err:(e&&e.message)||"Nu am putut încărca pozele pe GitHub."}}
+  const leftovers=[];
+  const note=(v,where)=>{if(typeof v==="string"&&v.indexOf("data:image")===0)leftovers.push(where)};
+  (payload.products||[]).forEach((p,i)=>{note(p.img,"produs "+(p.nume||i));(p.imgs||[]).forEach((im,j)=>note(im,"produs "+(p.nume||i)+" #"+j))});
+  (payload.posts||[]).forEach((p,i)=>note(p.img,"promo "+(p.titlu||i)));
+  (payload.blog||[]).forEach((p,i)=>note(p.img,"blog "+(p.titlu||i)));
+  if(payload.texts)note(payload.texts.heroImg,"banner");
+  if(leftovers.length){
+    return {ok:false,err:"Pozele nu s-au putut transforma în fișiere media: "+leftovers.slice(0,3).join(", ")+" . Reîncarcă poza și salvează din nou."};
+  }
   const publishStr=JSON.stringify(payload,null,1);
   let contentB64;
   try{contentB64=utf8ToBase64(publishStr)}
