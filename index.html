@@ -1252,7 +1252,7 @@ function compressImageFile(file){
     fr.readAsDataURL(file);
   });
 }
-async function fetchRemoteContentasync function fetchRemoteContent(){
+async function fetchRemoteContent(){
   try{
     const r=await fetch("./content.json?v="+Date.now(),{cache:"no-store"});
     if(!r.ok)return null;
