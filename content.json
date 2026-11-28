@@ -25,7 +25,7 @@
   "quick2": "Plata în rate, inclusiv fără avans",
   "quick3": "Livrare în județul Arad și împrejurimi",
   "quick4": "Service, piese și garanție extinsă",
-  "_ping": "mx064w3o"
+  "_ping": "mx066sbz"
  },
  "cats": [
   {
@@ -129,7 +129,7 @@
   {
    "id": "pmx064skwaq2",
    "nume": "Bshss",
-   "cat": "scutere",
+   "cat": "tricicluri",
    "pret": 9999999,
    "pretVechi": null,
    "putere": null,
@@ -678,5 +678,5 @@
    "nota": ""
   }
  ],
- "_mediaVer": "mx064w3o"
+ "_mediaVer": "mx066sbz"
 }
