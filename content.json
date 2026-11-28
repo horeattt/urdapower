@@ -25,7 +25,7 @@
   "quick2": "Plata în rate, inclusiv fără avans",
   "quick3": "Livrare în județul Arad și împrejurimi",
   "quick4": "Service, piese și garanție extinsă",
-  "_ping": "ok"
+  "_ping": "mx0641xr"
  },
  "cats": [
   {
@@ -126,6 +126,26 @@
   }
  ],
  "products": [
+  {
+   "id": "pmx064skwaq2",
+   "nume": "Bshss",
+   "cat": "scutere",
+   "pret": 9999999,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": 25,
+   "desc": "",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/pmx064skwaq2-0-ed1bafc5c4.jpg"
+   ],
+   "img": "media/pmx064skwaq2-0-ed1bafc5c4.jpg",
+   "stoc": "in_stoc"
+  },
   {
    "id": "pmwzk81w50md",
    "nume": "VSX ROSU",
@@ -657,5 +677,6 @@
    "dobanda": 123,
    "nota": ""
   }
- ]
+ ],
+ "_mediaVer": "mx0641xr"
 }
