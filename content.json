@@ -25,7 +25,7 @@
   "quick2": "Plata în rate, inclusiv fără avans",
   "quick3": "Livrare în județul Arad și împrejurimi",
   "quick4": "Service, piese și garanție extinsă",
-  "_ping": "mx0675e5"
+  "_ping": "mx067hjn"
  },
  "cats": [
   {
@@ -126,6 +126,26 @@
   }
  ],
  "products": [
+  {
+   "id": "pmx068r9g9yq",
+   "nume": "Dhdjdkdk",
+   "cat": "scutere",
+   "pret": null,
+   "pretVechi": null,
+   "putere": null,
+   "autonomie": null,
+   "viteza": 25,
+   "desc": "",
+   "dotari": "",
+   "faraPermis": true,
+   "activ": true,
+   "exemplu": false,
+   "imgs": [
+    "media/pmx068r9g9yq-0-f29bcc0963.jpg"
+   ],
+   "img": "media/pmx068r9g9yq-0-f29bcc0963.jpg",
+   "stoc": "la_furnizor"
+  },
   {
    "id": "pmx064skwaq2",
    "nume": "Bshss",
@@ -678,5 +698,5 @@
    "nota": ""
   }
  ],
- "_mediaVer": "mx0675e5"
+ "_mediaVer": "mx067hjn"
 }
